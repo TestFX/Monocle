@@ -1,0 +1,55 @@
+apply plugin: "java"
+apply plugin: "idea"
+
+version = "1.8.0_20"
+
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"
+
+idea {
+    project {
+        jdkName = "1.8"
+        languageLevel = "1.8"
+    }
+}
+
+task sourceJar(type: Jar) {
+    group "Build"
+    description "An archive of the source code"
+    classifier "sources"
+    from sourceSets.main.allJava
+}
+
+task javadocJar(type: Jar) {
+    group "Build"
+    description "An archive of the javadoc"
+    classifier "javadoc"
+    from javadoc
+}
+
+jar.finalizedBy sourceJar
+jar.finalizedBy javadocJar
+
+artifacts {
+    sourceJar
+    javadocJar
+}
+
+javadoc {
+    options.addStringOption("Xdoclint:none", "-quiet")
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = "2.2"
+}
+
+task createDirs << {
+    sourceSets*.allSource.srcDirs*.each { it.mkdirs() }
+    sourceSets*.resources.srcDirs*.each { it.mkdirs() }
+}
+
+task printConfigs << {
+    for (configuration in configurations) {
+        println configuration.name
+    }
+}
