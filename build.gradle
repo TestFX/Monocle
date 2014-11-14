@@ -1,7 +1,11 @@
 apply plugin: "java"
 apply plugin: "idea"
+apply plugin: "maven"
+apply plugin: "signing"
 
-version = "1.8.0_20"
+task wrapper(type: Wrapper) {
+    gradleVersion = "2.2"
+}
 
 sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
@@ -31,16 +35,13 @@ jar.finalizedBy sourceJar
 jar.finalizedBy javadocJar
 
 artifacts {
-    sourceJar
-    javadocJar
+    archives jar
+    archives sourceJar
+    archives javadocJar
 }
 
 javadoc {
     options.addStringOption("Xdoclint:none", "-quiet")
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = "2.2"
 }
 
 task createDirs << {
@@ -51,5 +52,67 @@ task createDirs << {
 task printConfigs << {
     for (configuration in configurations) {
         println configuration.name
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
+    maven {
+        url "http://oss.sonatype.org/content/repositories/releases/"
+    }
+}
+
+signing {
+    sign configurations.archives
+}
+    
+signArchives.onlyIf {
+    project.hasProperty("sonatypeUsername") && project.hasProperty("sonatypePassword")
+}
+
+uploadArchives.onlyIf {
+    project.hasProperty("sonatypeUsername") && project.hasProperty("sonatypePassword")
+}
+
+uploadArchives {
+    repositories.mavenDeployer {
+        beforeDeployment { 
+            MavenDeployment deployment -> signing.signPom(deployment) 
+        }
+
+        repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2") {
+            authentication(userName: sonatypeUsername, password: sonatypePassword)
+        }
+
+        snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
+            authentication(userName: sonatypeUsername, password: sonatypePassword)
+        }
+
+        pom.project {
+            artifactId   "${project.name}"
+            name         "${project.name}"
+            url          "https://github.com/TestFX/Monocle"
+            description  "Headless graphics driver for JavaFX"
+            packaging    "jar"
+            licenses {
+                license {
+                    name "GNU General Public License"
+                    url "https://github.com/TestFX/Monocle/blob/master/LICENSE"
+                    distribution "repo"
+                }
+            }
+            scm {
+                url "scm:git@github.com:TestFX/Monocle.git"
+                connection "scm:git@github.com:TestFX/Monocle.git"
+                developerConnection "scm:git@github.com:TestFX/Monocle.git"
+            }
+            developers {
+                developer { name "The OpenJDK Community" }
+            }
+        }
     }
 }
