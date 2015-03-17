@@ -1,7 +1,9 @@
 apply plugin: "java"
 apply plugin: "idea"
 
-version = "1.8.0_20"
+task wrapper(type: Wrapper) {
+    gradleVersion = "2.3"
+}
 
 sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
@@ -31,25 +33,128 @@ jar.finalizedBy sourceJar
 jar.finalizedBy javadocJar
 
 artifacts {
-    sourceJar
-    javadocJar
+    archives jar
+    archives sourceJar
+    archives javadocJar
 }
 
 javadoc {
     options.addStringOption("Xdoclint:none", "-quiet")
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = "2.2"
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.1"
+    }
 }
 
-task createDirs << {
+task createSourceDirs << {
     sourceSets*.allSource.srcDirs*.each { it.mkdirs() }
     sourceSets*.resources.srcDirs*.each { it.mkdirs() }
 }
 
-task printConfigs << {
-    for (configuration in configurations) {
-        println configuration.name
+task printGradleVersion << {
+    println "Gradle version: ${project.gradle.gradleVersion}"
+    println "Groovy version: ${GroovySystem.version}"
+}
+
+ext {
+    def buildTimeAndDate = new Date()
+    buildDate = buildTimeAndDate.format("yyyy-MM-dd")
+    buildTime = buildTimeAndDate.format("HH:mm:ss.SSSZ")
+}
+
+jar {
+    manifest.attributes(
+        "Created-By": System.properties["java.version"] + " (" + System.properties["java.vendor"]
+            + " " + System.properties["java.vm.version"] + ")",
+        "Build-Date": project.buildDate,
+        "Build-Time": project.buildTime,
+        "Specification-Title": project.name,
+        "Specification-Version": project.version,
+        "Specification-Vendor": project.vendor,
+        "Implementation-Title": project.name,
+        "Implementation-Version": project.version,
+        "Implementation-Vendor": project.vendor
+    )
+}
+
+apply plugin: "maven-publish"
+
+def pomConfig = {
+    name project.name
+    url project.url
+    description project.description
+
+    licenses {
+        license([:]) {
+            name project.licenseName
+            url project.licenseUrl
+            distribution "repo"
+        }
+    }
+
+    scm {
+        url project.sourceUrl
+    }
+
+    developers {
+        developer { name project.vendor }
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact sourceJar
+            artifact javadocJar
+            pom.withXml {
+                asNode().children().last() + pomConfig
+                asNode().appendNode("description", pomConfig.description)
+            }
+        }
+    }
+}
+
+apply plugin: "com.jfrog.bintray"
+
+bintray {
+    user = project.bintrayUser
+    key = project.bintrayKey
+    publications = ["mavenJava"]
+
+    pkg {
+        userOrg = project.bintrayOrg
+        repo = project.bintrayRepo
+        name = project.name
+        desc = project.description
+
+        licenses = [project.licenseNameShort]
+        labels = ["javafx", "monocle", "testfx"]
+
+        websiteUrl = project.url
+        issueTrackerUrl = project.issuesUrl
+        vcsUrl = project.sourceUrl
+
+        publicDownloadNumbers = true
+
+        version {
+            name = project.version
+            vcsTag = project.version
+
+            gpg {
+                sign = true
+            }
+            mavenCentralSync {
+                sync = true
+                user = project.sonatypeUsername
+                password = project.sonatypePassword
+            }
+        }
     }
 }
