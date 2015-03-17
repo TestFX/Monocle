@@ -1,8 +1,8 @@
 # OpenJFX Monocle
 
-**Monocle** is the implementation of the Glass windowing component of JavaFX for embedded systems.
-[[1]][1] It is part of the Java Platform since version 8u20 (released in August 2014), but not 
-included in builds for desktop platforms (Windows, Linux, Mac) [[2]][2].
+**Monocle** is the implementation of the Glass windowing component of JavaFX for embedded systems
+[\[1\]][1]. It is part of the Java Platform since version 8u20 (released in August 2014), but not
+included in builds for desktop platforms (Windows, Linux, Mac) [\[2\]][2].
 
 This repository provides pre-packaged builds of Monocle taken from the OpenJFX project. The builds
 include components to run in headless environments. They do not include native libraries for
