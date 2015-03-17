@@ -29,12 +29,12 @@ C:\> dir build\libs
 ## Update Instructions
 
 To update the build to newer versions of Monocle just copy source code files from
-[src/main/java/com/sun/glass/ui/monocle](10) into the directory `src\main\java` and resource files
-from [src/main/resources/com/sun/glass/ui/monocle](11) into the directory `src\main\resources`. Use
+[src/main/java/com/sun/glass/ui/monocle][10] into the directory `src\main\java` and resource files
+from [src/main/resources/com/sun/glass/ui/monocle][11] into the directory `src\main\resources`. Use
 the links `bz2`, `zip` or `gz` to export the files as archive.
 
 You can update to a certain version by changing `tip` in the URLs to a changeset hash. There is a
-list of changeset hashes at [http://hg.openjdk.java.net/openjfx/8u-dev/rt/tags](12).
+list of changeset hashes at [openjfx/8u-dev/rt/tags][12].
 
 Example changeset hashes:
 
@@ -51,6 +51,6 @@ Example changeset hashes:
 ## License
 
 OpenJDK and OpenJFX are licensed under the [GNU General Public License, version 2, with the
-Classpath Exception](20).
+Classpath Exception][20].
 
 [20]: http://openjdk.java.net/legal/gplv2+ce.html
