@@ -1,12 +1,15 @@
-# Monocle
+# OpenJFX Monocle
 
 **Monocle** is the implementation of the Glass windowing component of JavaFX for embedded systems.
-It is part of the Java Platform since version 8u20 (released in August 2014), but not included in
-builds for desktop platforms (Windows, Linux, Mac).
+[[1]][1] It is part of the Java Platform since version 8u20 (released in August 2014), but not 
+included in builds for desktop platforms (Windows, Linux, Mac) [[2]][2].
 
 This repository provides pre-packaged builds of Monocle taken from the OpenJFX project. The builds
 include components to run in headless environments. They do not include native libraries for
 low-level access.
+
+[1]: https://wiki.openjdk.java.net/display/OpenJFX/Monocle
+[2]: http://mail.openjdk.java.net/pipermail/openjfx-dev/2014-November/016111.html
 
 ## Build (under Windows)
 
@@ -26,11 +29,11 @@ C:\> gradlew clean jar
 C:\> dir build\libs
 ```
 
-## Update Instructions
+## Manual Update
 
 To update the build to newer versions of Monocle just copy source code files from
-[src/main/java/com/sun/glass/ui/monocle][10] into the directory `src\main\java` and resource files
-from [src/main/resources/com/sun/glass/ui/monocle][11] into the directory `src\main\resources`. Use
+[src/main/java/com/sun/glass/ui/monocle][10] into the directory `src/main/java` and resource files
+from [src/main/resources/com/sun/glass/ui/monocle][11] into the directory `src/main/resources`. Use
 the links `bz2`, `zip` or `gz` to export the files as archive.
 
 You can update to a certain version by changing `tip` in the URLs to a changeset hash. There is a
