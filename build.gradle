@@ -69,7 +69,7 @@ repositories {
 signing {
     sign configurations.archives
 }
-    
+
 signArchives.onlyIf {
     project.hasProperty("sonatypeUsername") && project.hasProperty("sonatypePassword")
 }
@@ -100,7 +100,7 @@ uploadArchives {
             packaging    "jar"
             licenses {
                 license {
-                    name "GNU General Public License"
+                    name "GNU General Public License, version 2, with the Classpath Exception"
                     url "https://github.com/TestFX/Monocle/blob/master/LICENSE"
                     distribution "repo"
                 }
