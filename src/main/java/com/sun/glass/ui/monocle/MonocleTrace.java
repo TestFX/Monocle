@@ -1,4 +1,4 @@
-package com.sun.glass.ui.monocle;/*
+/*
  * Copyright (c) 2014, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -23,13 +23,15 @@ package com.sun.glass.ui.monocle;/*
  * questions.
  */
 
-public class MonocleTrace {
+package com.sun.glass.ui.monocle;
 
-    public static void traceEvent(String format, Object... args) {
+class MonocleTrace {
+
+    static void traceEvent(String format, Object... args) {
         trace("traceEvent", format, args);
     }
 
-    public static void traceConfig(String format, Object... args) {
+    static void traceConfig(String format, Object... args) {
         trace("traceConfig", format, args);
     }
 
