@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2014, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,34 +25,48 @@
 
 package com.sun.glass.ui.monocle;
 
-import com.sun.glass.events.MouseEvent;
+import java.util.Arrays;
 
-class MouseInputSynthesizer {
+class RunnableQueue {
 
-    private static final MouseInputSynthesizer instance = new MouseInputSynthesizer();
+    private Runnable[] queue = new Runnable[32];
+    private int start;
+    private int count;
 
-    private final MouseState mouseState = new MouseState();
-
-    private MouseInputSynthesizer() {
-        MouseInput.getInstance().getState(mouseState);
+    private int modulo(int index) {
+        if (index >= queue.length) {
+            index -= queue.length;
+        }
+        return index;
     }
 
-    static MouseInputSynthesizer getInstance() {
-        return instance;
+    synchronized void postRunnable(Runnable r) {
+        if (count == queue.length) {
+            Runnable[] newQueue = new Runnable[(queue.length * 3) / 2];
+            System.arraycopy(queue, start, newQueue, 0, queue.length - start);
+            System.arraycopy(queue, 0, newQueue, queue.length - start, start);
+            queue = newQueue;
+            start = 0;
+        }
+        queue[modulo(start + count)] = r;
+        count ++;
+        notifyAll();
     }
 
-    void setState(TouchState touchState) {
-        if (touchState.getPointCount() == 0) {
-            mouseState.releaseButton(MouseEvent.BUTTON_LEFT);
-        } else {
-            mouseState.pressButton(MouseEvent.BUTTON_LEFT);
+    synchronized Runnable getNextRunnable() throws InterruptedException {
+        while (count == 0) {
+            wait();
         }
-        TouchState.Point p = touchState.getPointForID(touchState.getPrimaryID());
-        if (p != null) {
-            mouseState.setX(p.x);
-            mouseState.setY(p.y);
-        }
-        MouseInput.getInstance().setState(mouseState, true);
+        Runnable r = queue[start];
+        queue[start] = null;
+        start = modulo(start + 1);
+        count --;
+        return r;
+    }
+
+    synchronized void clear() {
+        Arrays.fill(queue, null);
+        count = 0;
     }
 
 }

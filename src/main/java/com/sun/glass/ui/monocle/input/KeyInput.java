@@ -23,16 +23,9 @@
  * questions.
  */
 
-package com.sun.glass.ui.monocle.input;
+package com.sun.glass.ui.monocle;
 
 import com.sun.glass.events.KeyEvent;
-import com.sun.glass.ui.Application;
-import com.sun.glass.ui.monocle.MonocleSettings;
-import com.sun.glass.ui.monocle.MonocleTrace;
-import com.sun.glass.ui.monocle.MonocleView;
-import com.sun.glass.ui.monocle.MonocleWindow;
-import com.sun.glass.ui.monocle.RunnableProcessor;
-import com.sun.glass.ui.monocle.util.IntSet;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -42,7 +35,7 @@ import java.security.PrivilegedAction;
  * thread-safe.
  */
 
-public class KeyInput {
+class KeyInput {
     private static KeyInput instance = new KeyInput();
 
     private KeyState state = new KeyState();
@@ -51,15 +44,24 @@ public class KeyInput {
     private boolean capsLock = false;
     private char[] NO_CHAR = { };
 
-    public static KeyInput getInstance() {
+    static KeyInput getInstance() {
         return instance;
     }
 
-    public void getState(KeyState result) {
+    /** Copies the current state into the KeyState provided.
+     *
+     * @param result target into which to copy the key state
+     */
+    void getState(KeyState result) {
         state.copyTo(result);
     }
 
-    public void setState(KeyState newState) {
+    /** Called from the input processor to update the key state and send
+     * key events.
+     *
+     * @param newState The updated key state
+     */
+    void setState(KeyState newState) {
         if (MonocleSettings.settings.traceEvents) {
             MonocleTrace.traceEvent("Set %s", newState);
         }
@@ -192,7 +194,7 @@ public class KeyInput {
         return c == '\000' ? NO_CHAR : new char[] { c };
     }
 
-    public int getKeyCodeForChar(char c) {
+    int getKeyCodeForChar(char c) {
         c = Character.toUpperCase(c);
         // remove shift modification
         switch (c) {

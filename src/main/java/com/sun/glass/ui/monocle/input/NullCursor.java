@@ -25,24 +25,36 @@
 
 package com.sun.glass.ui.monocle;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableSet;
+import com.sun.glass.ui.Size;
 
 /**
- * InputDeviceRegistry maintains an observable set of input devices. The
- * InputDeviceRegistry is responsible for detecting what input devices are
- * attached and for generating input events from these devices.
+ * Provides an implementation of NativeCursor that does nothing and does not
+ * show a cursor on the screen.
  */
-class InputDeviceRegistry {
-    protected ObservableSet<InputDevice> devices =
-            FXCollections.observableSet();
+class NullCursor extends NativeCursor {
 
-    /** Returns the set of currently available input devices.
-     *
-     * @return an ObservableSet of input devices. This set should not be modified.
-     */
-    ObservableSet<InputDevice> getInputDevices() {
-        return devices;
+    @Override
+    Size getBestSize() {
+        return new Size(16, 16);
     }
 
+    @Override
+    void setVisibility(boolean visibility) {
+    }
+
+    @Override
+    void setImage(byte[] cursorImage) {
+    }
+
+    @Override
+    void setLocation(int x, int y) {
+    }
+
+    @Override
+    void setHotSpot(int hotspotX, int hotspotY) {
+    }
+
+    @Override
+    void shutdown() {
+    }
 }

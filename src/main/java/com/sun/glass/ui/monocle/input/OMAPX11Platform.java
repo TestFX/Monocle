@@ -25,24 +25,20 @@
 
 package com.sun.glass.ui.monocle;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableSet;
+class OMAPX11Platform extends OMAPPlatform {
 
-/**
- * InputDeviceRegistry maintains an observable set of input devices. The
- * InputDeviceRegistry is responsible for detecting what input devices are
- * attached and for generating input events from these devices.
- */
-class InputDeviceRegistry {
-    protected ObservableSet<InputDevice> devices =
-            FXCollections.observableSet();
+    @Override
+    protected NativeScreen createScreen() {
+        return new X11Screen(false);
+    }
 
-    /** Returns the set of currently available input devices.
-     *
-     * @return an ObservableSet of input devices. This set should not be modified.
-     */
-    ObservableSet<InputDevice> getInputDevices() {
-        return devices;
+    @Override
+    public synchronized AcceleratedScreen getAcceleratedScreen(
+            int[] attributes) throws GLException {
+        if (accScreen == null) {
+            accScreen = new X11AcceleratedScreen(attributes);
+        }
+        return accScreen;
     }
 
 }

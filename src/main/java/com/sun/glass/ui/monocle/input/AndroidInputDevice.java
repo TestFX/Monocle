@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2014, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2015, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,24 +25,52 @@
 
 package com.sun.glass.ui.monocle;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableSet;
+import java.io.IOException;
 
 /**
- * InputDeviceRegistry maintains an observable set of input devices. The
- * InputDeviceRegistry is responsible for detecting what input devices are
- * attached and for generating input events from these devices.
+ *
  */
-class InputDeviceRegistry {
-    protected ObservableSet<InputDevice> devices =
-            FXCollections.observableSet();
+class AndroidInputDevice implements Runnable, InputDevice {
 
-    /** Returns the set of currently available input devices.
-     *
-     * @return an ObservableSet of input devices. This set should not be modified.
-     */
-    ObservableSet<InputDevice> getInputDevices() {
-        return devices;
+    private AndroidInputProcessor inputProcessor;
+
+    @Override
+    public void run() {
+        if (inputProcessor == null) {
+            System.err.println("Error: no input processor");
+            return;
+        }
+       // read from the android device (change this into push)
+        // and process the events
     }
 
+    @Override
+    public boolean isTouch() {
+        return true;
+    }
+
+    @Override
+    public boolean isMultiTouch() {
+        return true;
+    }
+
+    @Override
+    public boolean isRelative() {
+        return false;
+    }
+
+    @Override
+    public boolean is5Way() {
+        return false;
+    }
+
+    @Override
+    public boolean isFullKeyboard() {
+// if we return false, the JavaFX virtual keyboard will be used instead of the android built-in one
+        return true;
+    }
+     
+    void setInputProcessor(AndroidInputProcessor inputProcessor) {
+        this.inputProcessor = inputProcessor;
+    }
 }

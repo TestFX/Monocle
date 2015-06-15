@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2014, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,24 +25,40 @@
 
 package com.sun.glass.ui.monocle;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableSet;
+import com.sun.glass.ui.Clipboard;
+import com.sun.glass.ui.SystemClipboard;
 
-/**
- * InputDeviceRegistry maintains an observable set of input devices. The
- * InputDeviceRegistry is responsible for detecting what input devices are
- * attached and for generating input events from these devices.
- */
-class InputDeviceRegistry {
-    protected ObservableSet<InputDevice> devices =
-            FXCollections.observableSet();
+import java.util.HashMap;
 
-    /** Returns the set of currently available input devices.
-     *
-     * @return an ObservableSet of input devices. This set should not be modified.
-     */
-    ObservableSet<InputDevice> getInputDevices() {
-        return devices;
+/** There is no system clipboard on embedded Linux systems using a
+ * framebuffer. For X11 and Android a different implementation will
+ * be needed. */
+final class MonocleSystemClipboard extends SystemClipboard {
+
+    MonocleSystemClipboard() {
+        super(Clipboard.SYSTEM);
+    }
+
+    protected boolean isOwner() {
+        return true;
+    }
+
+    protected void pushToSystem(HashMap<String, Object> cacheData,
+                                int supportedActions) {
+    }
+
+    protected void pushTargetActionToSystem(int actionDone) {
+    }
+    protected Object popFromSystem(String mimeType) {
+        return null;
+    }
+
+    protected int supportedSourceActionsFromSystem() {
+        return Clipboard.ACTION_NONE;
+    }
+
+    protected String[] mimesFromSystem() {
+        return new String[0];
     }
 
 }

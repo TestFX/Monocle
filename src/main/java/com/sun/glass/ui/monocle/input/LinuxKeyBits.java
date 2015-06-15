@@ -25,24 +25,27 @@
 
 package com.sun.glass.ui.monocle;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableSet;
-
 /**
- * InputDeviceRegistry maintains an observable set of input devices. The
- * InputDeviceRegistry is responsible for detecting what input devices are
- * attached and for generating input events from these devices.
+ * LinuxKeyBits defines sets of keys that are used to identify classes of key input
+ * devices
  */
-class InputDeviceRegistry {
-    protected ObservableSet<InputDevice> devices =
-            FXCollections.observableSet();
+class LinuxKeyBits extends LinuxInput {
 
-    /** Returns the set of currently available input devices.
-     *
-     * @return an ObservableSet of input devices. This set should not be modified.
-     */
-    ObservableSet<InputDevice> getInputDevices() {
-        return devices;
-    }
+    static final short KEYBITS_ARROWS[] = {
+        KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT
+    };
+
+    static final short KEYBITS_SELECT[] = {
+        KEY_ENTER, KEY_SELECT
+    };
+
+    /** Keybits for PC keyboard */
+    static final short KEYBITS_PC[] = {
+        KEY_A, KEY_B, KEY_C, KEY_D, KEY_E, KEY_F, KEY_G, KEY_H, KEY_I, KEY_J,
+        KEY_K, KEY_L, KEY_M, KEY_N, KEY_O, KEY_P, KEY_Q, KEY_R, KEY_S, KEY_T,
+        KEY_U, KEY_V, KEY_W, KEY_X, KEY_Y, KEY_Z,
+        KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_8, KEY_9, KEY_0,
+        KEY_SPACE, KEY_LEFTSHIFT, KEY_TAB
+    };
 
 }

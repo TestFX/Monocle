@@ -25,24 +25,29 @@
 
 package com.sun.glass.ui.monocle;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableSet;
+class VNCPlatform extends HeadlessPlatform {
 
-/**
- * InputDeviceRegistry maintains an observable set of input devices. The
- * InputDeviceRegistry is responsible for detecting what input devices are
- * attached and for generating input events from these devices.
- */
-class InputDeviceRegistry {
-    protected ObservableSet<InputDevice> devices =
-            FXCollections.observableSet();
+    @Override
+    protected InputDeviceRegistry createInputDeviceRegistry() {
+        InputDeviceRegistry registry = new InputDeviceRegistry() {
+            {
+                // Register a pointing device so that the virtual keyboard will
+                // be used
+                devices.add(new InputDevice() {
+                    @Override public boolean isTouch() { return true; }
+                    @Override public boolean isMultiTouch() { return false; }
+                    @Override public boolean isRelative() { return false; }
+                    @Override public boolean is5Way() { return false; }
+                    @Override public boolean isFullKeyboard() { return false; }
+                });
+            }
+        };
+        return registry;
+    }
 
-    /** Returns the set of currently available input devices.
-     *
-     * @return an ObservableSet of input devices. This set should not be modified.
-     */
-    ObservableSet<InputDevice> getInputDevices() {
-        return devices;
+    @Override
+    protected NativeScreen createScreen() {
+        return new VNCScreen();
     }
 
 }

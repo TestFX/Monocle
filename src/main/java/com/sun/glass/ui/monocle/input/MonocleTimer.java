@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2014, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,24 +25,53 @@
 
 package com.sun.glass.ui.monocle;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableSet;
+import com.sun.glass.ui.Timer;
 
 /**
- * InputDeviceRegistry maintains an observable set of input devices. The
- * InputDeviceRegistry is responsible for detecting what input devices are
- * attached and for generating input events from these devices.
+ * Monocle implementation class for Timer.
  */
-class InputDeviceRegistry {
-    protected ObservableSet<InputDevice> devices =
-            FXCollections.observableSet();
+final class MonocleTimer extends Timer {
+    private static java.util.Timer timer;
+    private java.util.TimerTask task;
 
-    /** Returns the set of currently available input devices.
-     *
-     * @return an ObservableSet of input devices. This set should not be modified.
-     */
-    ObservableSet<InputDevice> getInputDevices() {
-        return devices;
+    MonocleTimer(final Runnable runnable) {
+        super(runnable);
     }
 
+    static int getMinPeriod_impl() {
+        return 0;
+    }
+
+    static int getMaxPeriod_impl() {
+        return 1000000;
+    }
+
+    @Override protected long _start(final Runnable runnable, int period) {
+        if (timer == null) {
+            timer = new java.util.Timer(true);
+        }
+
+        task = new java.util.TimerTask() {
+
+            @Override
+            public void run() {
+                runnable.run();
+            }
+        };
+
+        timer.schedule(task, 0, (long)period);
+        return 1; // need something non-zero to denote success.
+    }
+
+    @Override protected long _start(Runnable runnable) {
+        throw new RuntimeException("vsync timer not supported");
+    }
+
+    @Override protected void _stop(long timer) {
+        if (task != null) {
+            task.cancel();
+            task = null;
+        }
+    }
 }
+

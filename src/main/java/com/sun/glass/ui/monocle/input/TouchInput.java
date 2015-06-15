@@ -23,18 +23,13 @@
  * questions.
  */
 
-package com.sun.glass.ui.monocle.input;
+package com.sun.glass.ui.monocle;
 
 import com.sun.glass.events.TouchEvent;
 import com.sun.glass.ui.GestureSupport;
 import com.sun.glass.ui.TouchInputSupport;
 import com.sun.glass.ui.View;
 import com.sun.glass.ui.Window;
-import com.sun.glass.ui.monocle.MonocleSettings;
-import com.sun.glass.ui.monocle.MonocleTrace;
-import com.sun.glass.ui.monocle.MonocleWindow;
-import com.sun.glass.ui.monocle.RunnableProcessor;
-import com.sun.glass.ui.monocle.input.filters.TouchPipeline;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -43,7 +38,7 @@ import java.security.PrivilegedAction;
  * Processes touch input events based on changes to touch state. Not
  * thread-safe.
  */
-public class TouchInput {
+class TouchInput {
 
     /**
      * This property determines the sensitivity of move events from touch. The
@@ -64,7 +59,7 @@ public class TouchInput {
     private final TouchInputSupport touches =
             new TouchInputSupport(gestures.createTouchCountListener(), false);
 
-    public static TouchInput getInstance() {
+    static TouchInput getInstance() {
         return instance;
     }
 
@@ -72,7 +67,7 @@ public class TouchInput {
     }
 
     /** Gets the base touch filter pipeline common to all touch devices */
-    public TouchPipeline getBasePipeline() {
+    TouchPipeline getBasePipeline() {
         if (basePipeline == null) {
             basePipeline = new TouchPipeline();
             String[] touchFilterNames = AccessController.doPrivileged(
@@ -93,7 +88,7 @@ public class TouchInput {
      *
      * @param result target into which to copy the touch state
      */
-    public void getState(TouchState result) {
+    void getState(TouchState result) {
         state.copyTo(result);
     }
 
@@ -102,7 +97,7 @@ public class TouchInput {
      *
      * @param newState The updated touch state
      */
-    public void setState(TouchState newState) {
+    void setState(TouchState newState) {
         if (MonocleSettings.settings.traceEvents) {
             MonocleTrace.traceEvent("Set %s", newState);
         }
@@ -128,13 +123,14 @@ public class TouchInput {
             MouseInputSynthesizer.getInstance().setState(newState);
         }
         newState.copyTo(state);
+        newState.clearWindow();
     }
 
     private void dispatchPoint(Window window, View view, int state,
                                int id, int x, int y) {
         touches.notifyNextTouchEvent(view, state, id,
-                                     x, y,
-                                     x - window.getX(), y - window.getY());
+                                     x - window.getX(), y - window.getY(),
+                                     x, y);
     }
 
     private void postPoints(Window window, View view,
@@ -302,7 +298,7 @@ public class TouchInput {
         return count;
     }
 
-    public int getTouchRadius() {
+    int getTouchRadius() {
         return touchRadius;
     }
 

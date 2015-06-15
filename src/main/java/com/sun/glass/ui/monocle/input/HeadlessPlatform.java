@@ -25,24 +25,23 @@
 
 package com.sun.glass.ui.monocle;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableSet;
+class HeadlessPlatform extends NativePlatform {
 
-/**
- * InputDeviceRegistry maintains an observable set of input devices. The
- * InputDeviceRegistry is responsible for detecting what input devices are
- * attached and for generating input events from these devices.
- */
-class InputDeviceRegistry {
-    protected ObservableSet<InputDevice> devices =
-            FXCollections.observableSet();
+    @Override
+    protected InputDeviceRegistry createInputDeviceRegistry() {
+        // use of a LinuxInputDeviceRegistry lets us simulate
+        // Linux input devices on any system
+        return new LinuxInputDeviceRegistry(true);
+    }
 
-    /** Returns the set of currently available input devices.
-     *
-     * @return an ObservableSet of input devices. This set should not be modified.
-     */
-    ObservableSet<InputDevice> getInputDevices() {
-        return devices;
+    @Override
+    protected NativeCursor createCursor() {
+        return new NullCursor();
+    }
+
+    @Override
+    protected NativeScreen createScreen() {
+        return new HeadlessScreen();
     }
 
 }

@@ -25,24 +25,56 @@
 
 package com.sun.glass.ui.monocle;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableSet;
+import com.sun.glass.ui.Size;
 
-/**
- * InputDeviceRegistry maintains an observable set of input devices. The
- * InputDeviceRegistry is responsible for detecting what input devices are
- * attached and for generating input events from these devices.
+/** Cursor using dispman API.
+ * TODO: Can we mmap the image and location files?
  */
-class InputDeviceRegistry {
-    protected ObservableSet<InputDevice> devices =
-            FXCollections.observableSet();
+class DispmanCursor extends NativeCursor {
 
-    /** Returns the set of currently available input devices.
-     *
-     * @return an ObservableSet of input devices. This set should not be modified.
-     */
-    ObservableSet<InputDevice> getInputDevices() {
-        return devices;
+    private static final int CURSOR_WIDTH = 16;
+    private static final int CURSOR_HEIGHT = 16;
+
+
+    private native void _initDispmanCursor(int cursorWidth, int cursorHeight);
+    private native void _setVisible(boolean visible);
+    private native void _setLocation(int x, int y);
+    private native void _setImage(byte[] cursorImage);
+
+    DispmanCursor() {
+        _initDispmanCursor(CURSOR_WIDTH, CURSOR_HEIGHT);
     }
 
+    @Override
+    Size getBestSize() {
+        return new Size(CURSOR_WIDTH, CURSOR_HEIGHT);
+    }
+
+    @Override
+    void setVisibility(boolean visibility) {
+        isVisible = visibility;
+        _setVisible(visibility);
+    }
+
+    private void updateImage(boolean always) {
+        System.out.println("DispmanCursor.updateImage: not implemented");
+    }
+
+    @Override
+    void setImage(byte[] cursorImage) {
+        _setImage(cursorImage);
+    }
+
+    @Override
+    void setLocation(int x, int y) {
+        _setLocation(x, y);
+    }
+
+    @Override
+    void setHotSpot(int hotspotX, int hotspotY) {
+    }
+
+    @Override
+    void shutdown() {
+    }
 }

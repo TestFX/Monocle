@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2014, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2014, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,24 +25,23 @@
 
 package com.sun.glass.ui.monocle;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableSet;
+import java.util.Map;
 
 /**
- * InputDeviceRegistry maintains an observable set of input devices. The
- * InputDeviceRegistry is responsible for detecting what input devices are
- * attached and for generating input events from these devices.
+ * A UdevListener is registered with a Udev when the Udev
+ * is created. The listener is then called on the event thread when udev
+ * events are avaialable.
  */
-class InputDeviceRegistry {
-    protected ObservableSet<InputDevice> devices =
-            FXCollections.observableSet();
+interface UdevListener {
 
-    /** Returns the set of currently available input devices.
+    /**
+     * Called when a udev event is available.
+     * Called on the runnable processor provided to the Udev.
      *
-     * @return an ObservableSet of input devices. This set should not be modified.
+     * @param action The udev action, usually "add", "remove", "change",
+     *               "online" or "offline.
+     * @param event a map of key/value pairs describing the event. These are
+     *              the key/value pairs received from udev.
      */
-    ObservableSet<InputDevice> getInputDevices() {
-        return devices;
-    }
-
+    void udevEvent(String action, Map<String, String> event);
 }

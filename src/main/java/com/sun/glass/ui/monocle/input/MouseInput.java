@@ -23,30 +23,19 @@
  * questions.
  */
 
-package com.sun.glass.ui.monocle.input;
+package com.sun.glass.ui.monocle;
 
 import com.sun.glass.events.MouseEvent;
 import com.sun.glass.ui.Application;
 import com.sun.glass.ui.Clipboard;
-import com.sun.glass.ui.View;
-import com.sun.glass.ui.monocle.MonocleApplication;
-import com.sun.glass.ui.monocle.MonocleSettings;
-import com.sun.glass.ui.monocle.MonocleTrace;
-import com.sun.glass.ui.monocle.MonocleView;
-import com.sun.glass.ui.monocle.MonocleWindow;
-import com.sun.glass.ui.monocle.MonocleWindowManager;
-import com.sun.glass.ui.monocle.NativePlatformFactory;
-import com.sun.glass.ui.monocle.NativeScreen;
-import com.sun.glass.ui.monocle.RunnableProcessor;
-import com.sun.glass.ui.monocle.util.IntSet;
 
 import java.util.BitSet;
 
 /**
  * Processes mouse input events based on changes to mouse state. Not
- * thread-safe.
+ * thread-safe and can only be used on the JavaFX application thread.
  */
-public class MouseInput {
+class MouseInput {
     private static MouseInput instance = new MouseInput();
 
     private MouseState state = new MouseState();
@@ -65,15 +54,30 @@ public class MouseInput {
     private static final int DRAG_OVER = 3;
     private static final int DRAG_DROP = 4;
 
-    public static MouseInput getInstance() {
+    static MouseInput getInstance() {
         return instance;
     }
 
-    public void getState(MouseState result) {
+    /** Retrieves the current state of mouse buttons and of the cursor.
+     *
+     * @param result a MouseState to which to copy data on the current mouse
+     *               buttons and coordinates.
+     */
+    void getState(MouseState result) {
         state.copyTo(result);
     }
 
-    public void setState(MouseState newState, boolean synthesized) {
+    /**
+     * Sets a new state for mouse buttons and coordinates, generating input
+     * events where appropriate.
+     *
+     * @param newState    the new state
+     * @param synthesized true if this state change is synthesized from a change
+     *                    in touch state; false if this state change comes from
+     *                    an actual relative pointing devices or from the Glass
+     *                    robot.
+     */
+    void setState(MouseState newState, boolean synthesized) {
         if (MonocleSettings.settings.traceEvents) {
             MonocleTrace.traceEvent("Set %s", newState);
         }
@@ -211,6 +215,7 @@ public class MouseInput {
 
                 });
             }
+            newState.setWheel(MouseState.WHEEL_NONE);
         }
         newState.copyTo(state);
     }
@@ -241,12 +246,12 @@ public class MouseInput {
                     if (dragInProgress) {
                         try {
                             view.notifyDragDrop(relX, relY, x, y,
-                                                Clipboard.ACTION_COPY_OR_MOVE);
+                                                Clipboard.ACTION_MOVE);
                         } catch (RuntimeException e) {
                             Application.reportException(e);
                         }
                         try {
-                            view.notifyDragEnd(Clipboard.ACTION_COPY_OR_MOVE);
+                            view.notifyDragEnd(Clipboard.ACTION_MOVE);
                         } catch (RuntimeException e) {
                             Application.reportException(e);
                         }
@@ -265,7 +270,7 @@ public class MouseInput {
                             // first drag notification
                             try {
                                 view.notifyDragEnter(relX, relY, x, y,
-                                                     Clipboard.ACTION_COPY_OR_MOVE);
+                                                     Clipboard.ACTION_MOVE);
                             } catch (RuntimeException e) {
                                 Application.reportException(e);
                             }
@@ -273,7 +278,7 @@ public class MouseInput {
                         } else if (dragView == view && dragActions.get(DRAG_ENTER)) {
                             try {
                                 view.notifyDragOver(relX, relY, x, y,
-                                                    Clipboard.ACTION_COPY_OR_MOVE);
+                                                    Clipboard.ACTION_MOVE);
                             } catch (RuntimeException e) {
                                 Application.reportException(e);
                             }
@@ -288,7 +293,7 @@ public class MouseInput {
                             }
                             try {
                                 view.notifyDragEnter(relX, relY, x, y,
-                                                     Clipboard.ACTION_COPY_OR_MOVE);
+                                                     Clipboard.ACTION_MOVE);
                             } catch (RuntimeException e) {
                                 Application.reportException(e);
                             }
@@ -312,7 +317,7 @@ public class MouseInput {
                          synthesized);
     }
 
-    public void notifyDragStart() {
+    void notifyDragStart() {
         dragInProgress = true;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2014, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2015, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -24,25 +24,41 @@
  */
 
 package com.sun.glass.ui.monocle;
+import com.sun.glass.utils.NativeLibLoader;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableSet;
+class AndroidPlatform extends NativePlatform {
 
-/**
- * InputDeviceRegistry maintains an observable set of input devices. The
- * InputDeviceRegistry is responsible for detecting what input devices are
- * attached and for generating input events from these devices.
- */
-class InputDeviceRegistry {
-    protected ObservableSet<InputDevice> devices =
-            FXCollections.observableSet();
+    AndroidPlatform() {
+        NativeLibLoader.loadLibrary("glass_monocle");
+    }
 
-    /** Returns the set of currently available input devices.
+    @Override
+    protected InputDeviceRegistry createInputDeviceRegistry() {
+        return AndroidInputDeviceRegistry.getInstance();
+    }
+
+    @Override
+    protected NativeCursor createCursor() {
+        return new NullCursor();
+    }
+
+    @Override
+    protected NativeScreen createScreen() {
+        return new AndroidScreen();
+    }
+
+    /** Create the accelerated screen for this platform
      *
-     * @return an ObservableSet of input devices. This set should not be modified.
+     * @param attributes a sequence of pairs (GLAttibute, value)
+     * @throws GLException
      */
-    ObservableSet<InputDevice> getInputDevices() {
-        return devices;
+    @Override
+    public synchronized AcceleratedScreen getAcceleratedScreen(
+            int[] attributes) throws GLException {
+        if (accScreen == null) {
+            accScreen = new AndroidAcceleratedScreen(attributes);
+        }
+        return accScreen;
     }
 
 }

@@ -23,19 +23,21 @@
  * questions.
  */
 
-package com.sun.glass.ui.monocle.input;
+package com.sun.glass.ui.monocle;
 
 import com.sun.glass.events.KeyEvent;
 import com.sun.glass.events.MouseEvent;
-import com.sun.glass.ui.monocle.MonocleWindow;
-import com.sun.glass.ui.monocle.MonocleWindowManager;
-import com.sun.glass.ui.monocle.util.IntSet;
 
-public class MouseState {
+/**
+ * MouseState is a snapshot of mouse coordinates and which buttons are pressed.
+ * MouseState is used both to store the current state of mouse input and to
+ * describe changes to that state.
+ */
+class MouseState {
 
-    public static final int WHEEL_NONE = 0;
-    public static final int WHEEL_UP = 1;
-    public static final int WHEEL_DOWN = -1 ;
+    static final int WHEEL_NONE = 0;
+    static final int WHEEL_UP = 1;
+    static final int WHEEL_DOWN = -1 ;
 
     private int x;
     private int y;
@@ -44,39 +46,46 @@ public class MouseState {
 
     private IntSet buttonsPressed = new IntSet();
 
-    public int getX() {
+    int getX() {
         return x;
     }
 
-    public void setX(int x) {
+    void setX(int x) {
         this.x = x;
     }
 
-    public int getY() {
+    int getY() {
         return y;
     }
 
-    public void setY(int y) {
+    void setY(int y) {
         this.y = y;
     }
 
-    public int getWheel() {
+    int getWheel() {
         return wheel;
     }
 
-    public void setWheel(int wheel) {
+    void setWheel(int wheel) {
         this.wheel = wheel;
     }
 
-    public void pressButton(int button) {
+    void pressButton(int button) {
         buttonsPressed.addInt(button);
     }
 
-    public void releaseButton(int button) {
+    void releaseButton(int button) {
         buttonsPressed.removeInt(button);
     }
 
-    /** Returns the Glass window on which this event state is located . */
+    /** Returns the Glass window on which the coordinates of this state are located.
+     * @param recalculateCache true if the cached value for the target window
+     *                         should be recalculated; false if the cached
+     *                         value should be used to determine the result
+     *                         of this method.
+     * @return the MonocleWindow at the top of the stack at the coordinates
+     * described by this state object.
+     */
     MonocleWindow getWindow(boolean recalculateCache) {
         if (window == null || recalculateCache) {
             window = (MonocleWindow)
@@ -111,7 +120,11 @@ public class MouseState {
         return modifiers;
     }
 
-    public void copyTo(MouseState target) {
+    /** Copies the contents of this state object to another.
+     *
+     * @param target The MouseState to which to copy this state's data.
+     */
+    void copyTo(MouseState target) {
         target.x = x;
         target.y = y;
         target.wheel = wheel;
@@ -119,7 +132,7 @@ public class MouseState {
         target.window = window;
     }
 
-    public IntSet getButtonsPressed() {
+    IntSet getButtonsPressed() {
         return buttonsPressed;
     }
 
@@ -135,7 +148,7 @@ public class MouseState {
      *
      * @param ms the MouseState to compare to
      */
-    public boolean canBeFoldedWith(MouseState ms) {
+    boolean canBeFoldedWith(MouseState ms) {
         return ms.buttonsPressed.equals(buttonsPressed) && ms.wheel == wheel;
     }
 

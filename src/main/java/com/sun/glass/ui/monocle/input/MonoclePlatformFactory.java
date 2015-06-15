@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2014, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2014, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,24 +25,41 @@
 
 package com.sun.glass.ui.monocle;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableSet;
+import com.sun.glass.ui.Application;
+import com.sun.glass.ui.Menu;
+import com.sun.glass.ui.MenuBar;
+import com.sun.glass.ui.MenuItem;
+import com.sun.glass.ui.PlatformFactory;
+import com.sun.glass.ui.delegate.ClipboardDelegate;
+import com.sun.glass.ui.delegate.MenuBarDelegate;
+import com.sun.glass.ui.delegate.MenuDelegate;
+import com.sun.glass.ui.delegate.MenuItemDelegate;
 
-/**
- * InputDeviceRegistry maintains an observable set of input devices. The
- * InputDeviceRegistry is responsible for detecting what input devices are
- * attached and for generating input events from these devices.
- */
-class InputDeviceRegistry {
-    protected ObservableSet<InputDevice> devices =
-            FXCollections.observableSet();
+public class MonoclePlatformFactory extends PlatformFactory {
 
-    /** Returns the set of currently available input devices.
-     *
-     * @return an ObservableSet of input devices. This set should not be modified.
-     */
-    ObservableSet<InputDevice> getInputDevices() {
-        return devices;
+    @Override
+    public Application createApplication() {
+        return new MonocleApplication();
+    }
+
+    @Override
+    public MenuBarDelegate createMenuBarDelegate(MenuBar menubar) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public MenuDelegate createMenuDelegate(Menu menu) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public MenuItemDelegate createMenuItemDelegate(MenuItem menuItem) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ClipboardDelegate createClipboardDelegate() {
+        return new MonocleClipboardDelegate();
     }
 
 }

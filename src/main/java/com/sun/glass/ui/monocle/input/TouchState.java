@@ -23,31 +23,47 @@
  * questions.
  */
 
-package com.sun.glass.ui.monocle.input;
-
-import com.sun.glass.ui.monocle.MonocleWindow;
-import com.sun.glass.ui.monocle.MonocleWindowManager;
+package com.sun.glass.ui.monocle;
 
 import java.util.Arrays;
 import java.util.Comparator;
 
-public class TouchState {
+/**
+ * TouchState is a snapshot of touch points and their coordinates.
+ * TouchState is used both to store the current state of touch input and to
+ * describe changes to that state.
+ *
+ * A TouchState contains a number of Points. Each point has a unique ID,
+ * which is either assigned by a touch driver, or by JavaFX's input
+ * processing code. One touch point is defined as the primary touch point; it
+ * is this touch point's coordinates that are used to determine the
+ * coordinates of synthesized mouse events.
+ */
+class TouchState {
 
-    public static class Point {
-        public int id;
-        public int x;
-        public int y;
-        public void copyTo(Point target) {
+    /** Describes a single touch point */
+    static class Point {
+        int id;
+        int x;
+        int y;
+
+        /**
+         * Copies a touch point's data to a target Point
+         *
+         * @param target the Point object to which to copy this object's data
+         */
+        void copyTo(Point target) {
             target.id = id;
             target.x = x;
             target.y = y;
         }
+        @Override
         public String toString() {
             return "TouchState.Point[id=" + id + ",x=" + x + ",y="  + y + "]";
         }
     }
 
-    static Comparator<Point> pointIdComparator = (p1, p2) -> p1.id - p2.id;
+    private static Comparator<Point> pointIdComparator = (p1, p2) -> p1.id - p2.id;
 
     private Point[] points = new Point[1];
     private int pointCount = 0;
@@ -79,7 +95,14 @@ public class TouchState {
         return window;
     }
 
-    public Point getPoint(int index) {
+    /**
+     * Returns the nth point in the toich point list, for index n
+     *
+     * @param index The index of the point point to return. index should be less
+     *              than the value returned by getPointCount().
+     * @return A touch point.
+     */
+    Point getPoint(int index) {
         return points[index];
     }
 
@@ -87,7 +110,7 @@ public class TouchState {
      * @param id The Point ID to match. A value of -1 matches any Point.
      * @return a matching Point, or null if there is no point with that ID.
      */
-    public Point getPointForID(int id) {
+    Point getPointForID(int id) {
         for (int i = 0; i < pointCount; i++) {
             if (id == -1 || points[i].id == id) {
                 return points[i];
@@ -96,10 +119,12 @@ public class TouchState {
         return null;
     }
 
+    /** Returns the touch point ID of the primary point. */
     int getPrimaryID() {
         return primaryID;
     }
 
+    /** Updates the primary point ID */
     void assignPrimaryID() {
         if (pointCount == 0) {
             primaryID = -1;
@@ -118,15 +143,35 @@ public class TouchState {
         }
     }
 
-    public int getPointCount() {
+    /** Returns the number of touch points pressed.
+     *
+     * @return the number of touch points
+     */
+    int getPointCount() {
         return pointCount;
     }
 
-    public void clear() {
+    /** Removes all touch points from this state. */
+    void clear() {
         pointCount = 0;
     }
 
-    public Point addPoint(Point p) {
+    /** Clears the cached window. */
+    void clearWindow() {
+        window = null;
+    }
+
+    /** Adds a Point to this state object.
+     *
+     * @param p the Point describing the data to add, or null if no data is
+     *          available yet for this point. p is not modified,
+     *          but its contents are copied to the object describing the new
+     *          Point.
+     * @return the Point with the data for the new touch point. The fields of
+     * this Point may be modified directly to change the data for the new
+     * touch point.
+     */
+    Point addPoint(Point p) {
         if (points.length == pointCount) {
             points = Arrays.copyOf(points, points.length * 2);
         }
@@ -139,7 +184,11 @@ public class TouchState {
         return points[pointCount++];
     }
 
-    public void removePointForID(int id) {
+    /** Removes the point with the given ID
+     *
+     * @param id The ID of the touch point which is to be removed.
+     */
+    void removePointForID(int id) {
         for (int i = 0; i < pointCount; i++) {
             if (points[i].id == id) {
                 if (i < pointCount - 1) {
@@ -151,14 +200,24 @@ public class TouchState {
         }
     }
 
-    public void setPoint(int index, Point p) {
+    /** Replaces the touch point data at the given index with the given touch
+     *    point data
+     *
+     * @param index the index at which to change the touch point data
+     * @param p the data to copy to the given index.
+     */
+    void setPoint(int index, Point p) {
         if (index >= pointCount) {
             throw new IndexOutOfBoundsException();
         }
         p.copyTo(points[index]);
     }
 
-    public void copyTo(TouchState target) {
+    /** Copies the contents of this state object to another.
+     *
+     * @param target The TouchState to which to copy this state's data.
+     */
+    void copyTo(TouchState target) {
         target.clear();
         for (int i = 0; i < pointCount; i++) {
             target.addPoint(points[i]);
@@ -167,6 +226,7 @@ public class TouchState {
         target.window = window;
     }
 
+    @Override
     public String toString() {
         StringBuffer sb = new StringBuffer("TouchState[" + pointCount);
         for (int i = 0; i < pointCount; i++) {
@@ -177,7 +237,11 @@ public class TouchState {
         return sb.toString();
     }
 
-    public void sortPointsByID() {
+    /**
+     * Modifies the ordering touch points in this state object so that the
+     * points are sorted in increasing order of ID.
+     */
+    void sortPointsByID() {
         Arrays.sort(points, 0, pointCount, pointIdComparator);
     }
 
@@ -205,7 +269,7 @@ public class TouchState {
      * @param ts the TouchState to compare to
      * @param ignoreIDs if true, ignore IDs when comparing points
      */
-    public boolean canBeFoldedWith(TouchState ts, boolean ignoreIDs) {
+    boolean canBeFoldedWith(TouchState ts, boolean ignoreIDs) {
         if (ts.pointCount != pointCount) {
             return false;
         }

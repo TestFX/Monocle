@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2014, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,34 +25,38 @@
 
 package com.sun.glass.ui.monocle;
 
-import com.sun.glass.events.MouseEvent;
+class MX6AcceleratedScreen extends AcceleratedScreen {
 
-class MouseInputSynthesizer {
+    private long fbGetDisplayByIndexHandle, fbCreateWindowHandle;
+    private long cachedNativeDisplay = 0l;
 
-    private static final MouseInputSynthesizer instance = new MouseInputSynthesizer();
+    private native long _platformGetNativeWindow(long methodHandle,
+                                                 long display);
 
-    private final MouseState mouseState = new MouseState();
+    private native long _platformGetNativeDisplay(long methodHandle);
 
-    private MouseInputSynthesizer() {
-        MouseInput.getInstance().getState(mouseState);
+    MX6AcceleratedScreen(int[] attributes) throws GLException {
+        super(attributes);
     }
 
-    static MouseInputSynthesizer getInstance() {
-        return instance;
-    }
-
-    void setState(TouchState touchState) {
-        if (touchState.getPointCount() == 0) {
-            mouseState.releaseButton(MouseEvent.BUTTON_LEFT);
+    @Override
+    protected long platformGetNativeWindow() {
+        fbCreateWindowHandle = ls.dlsym(getEGLHandle(), "fbCreateWindow");
+        if (fbCreateWindowHandle == 0l) {
+            return -1l;
         } else {
-            mouseState.pressButton(MouseEvent.BUTTON_LEFT);
+            return _platformGetNativeWindow(fbCreateWindowHandle, cachedNativeDisplay);
         }
-        TouchState.Point p = touchState.getPointForID(touchState.getPrimaryID());
-        if (p != null) {
-            mouseState.setX(p.x);
-            mouseState.setY(p.y);
-        }
-        MouseInput.getInstance().setState(mouseState, true);
     }
 
+    @Override
+    protected long platformGetNativeDisplay() {
+        fbGetDisplayByIndexHandle = ls.dlsym(getEGLHandle(), "fbGetDisplayByIndex");
+        if (fbGetDisplayByIndexHandle == 0l) {
+            return -1l;
+        } else {
+            cachedNativeDisplay = _platformGetNativeDisplay(fbGetDisplayByIndexHandle);
+            return cachedNativeDisplay;
+        }
+    }
 }

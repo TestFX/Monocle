@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2014, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,24 +25,22 @@
 
 package com.sun.glass.ui.monocle;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableSet;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
-/**
- * InputDeviceRegistry maintains an observable set of input devices. The
- * InputDeviceRegistry is responsible for detecting what input devices are
- * attached and for generating input events from these devices.
- */
-class InputDeviceRegistry {
-    protected ObservableSet<InputDevice> devices =
-            FXCollections.observableSet();
+class MonocleSettings {
 
-    /** Returns the set of currently available input devices.
-     *
-     * @return an ObservableSet of input devices. This set should not be modified.
-     */
-    ObservableSet<InputDevice> getInputDevices() {
-        return devices;
+    static final MonocleSettings settings = AccessController.doPrivileged(
+            (PrivilegedAction<MonocleSettings>) () -> new MonocleSettings());
+
+    final boolean traceEvents;
+    final boolean traceEventsVerbose;
+    final boolean tracePlatformConfig;
+
+    private MonocleSettings() {
+        traceEventsVerbose = Boolean.getBoolean("monocle.input.traceEvents.verbose");
+        traceEvents = traceEventsVerbose || Boolean.getBoolean("monocle.input.traceEvents");
+        tracePlatformConfig = Boolean.getBoolean("monocle.platform.traceConfig");
     }
 
 }
