@@ -2,7 +2,7 @@ apply plugin: "java"
 apply plugin: "idea"
 
 task wrapper(type: Wrapper) {
-    gradleVersion = "2.3"
+    gradleVersion = "2.4"
 }
 
 sourceCompatibility = "1.8"
@@ -48,7 +48,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.1"
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.2"
     }
 }
 

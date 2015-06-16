@@ -5,3 +5,5 @@
 *.ipr
 *.iws
 *.cmd
+.DS_Store
+tags
