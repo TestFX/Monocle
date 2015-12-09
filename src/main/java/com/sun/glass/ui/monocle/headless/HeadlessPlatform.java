@@ -46,7 +46,22 @@ public class HeadlessPlatform extends NativePlatform {
 
     @Override
     protected NativeScreen createScreen() {
-        return new HeadlessScreen();
+        try {
+            final int[] screenSize = getScreenSize();
+            return new HeadlessScreen(screenSize[0], screenSize[1], screenSize[2]);
+        } catch (Throwable e) {
+            System.err.println("Error occurred trying to use the specified screensize, using default screen size, error was." + e.getMessage());
+            return new HeadlessScreen();
+        }
+    }
+
+    private int[] getScreenSize() throws NumberFormatException {
+        final String[] screenSize = System.getProperty("monocle.headless.screenSize", "1280x800x32").split("x");
+        final int[] specs = new int[3];
+        specs[0] = Integer.parseInt(screenSize[0]);
+        specs[1] = Integer.parseInt(screenSize[1]);
+        specs[2] = screenSize.length > 2 ? Integer.parseInt(screenSize[2]) : 32;
+        return specs;
     }
 
 }
