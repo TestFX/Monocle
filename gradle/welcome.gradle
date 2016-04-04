@@ -1,0 +1,8 @@
+println """\
+Welcome to Gradle $gradle.gradleVersion (JRE ${System.properties["java.version"]}).
+
+- Project build file: "${relativePath(buildFile)}"
+- Project root directory: "$projectDir"
+- Gradle home directory: "$gradle.gradleHomeDir"
+- Gradle user directory: "$gradle.gradleUserHomeDir"
+"""

@@ -1,0 +1,76 @@
+apply plugin: "maven-publish"
+apply plugin: "com.jfrog.bintray"
+
+def pomConfig = {
+    name project.name
+    description project.description
+    url project.url
+
+    licenses {
+        license([:]) {
+            name project.licenseName
+            url project.licenseUrl
+            distribution "repo"
+        }
+    }
+
+    developers {
+        developer { name project.vendor }
+    }
+
+    scm {
+        url project.sourceUrl
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact sourceJar
+            artifact javadocJar
+            pom.withXml {
+                asNode().children().last() + pomConfig
+                asNode().appendNode("description", pomConfig.description)
+            }
+        }
+    }
+}
+
+bintray {
+    user = project.bintrayUser
+    key = project.bintrayKey
+    publications = ["mavenJava"]
+
+    dryRun = false
+
+    pkg {
+        userOrg = project.bintrayOrg
+        repo = project.bintrayRepo
+        name = project.name
+        desc = project.description
+
+        licenses = [project.licenseNameShort]
+        labels = []
+
+        websiteUrl = project.url
+        issueTrackerUrl = project.issuesUrl
+        vcsUrl = project.sourceUrl
+
+        publicDownloadNumbers = true
+
+        version {
+            name = project.version
+            vcsTag = project.version
+
+            gpg {
+                sign = true
+            }
+            mavenCentralSync {
+                sync = true
+                user = project.sonatypeUsername
+                password = project.sonatypePassword
+            }
+        }
+    }
+}
