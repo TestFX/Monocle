@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2015, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -64,7 +64,7 @@ class LinuxKeyProcessor implements LinuxInputProcessor {
         }
     }
 
-    private int getVirtualKeyCode(int linuxKeyCode) {
+    static int getVirtualKeyCode(int linuxKeyCode) {
         if (linuxKeyCode >= LinuxInput.KEY_1 && linuxKeyCode <= LinuxInput.KEY_9) {
             return linuxKeyCode - LinuxInput.KEY_1 + KeyEvent.VK_1;
         } else if (linuxKeyCode >= LinuxInput.KEY_NUMERIC_0 && linuxKeyCode <= LinuxInput.KEY_NUMERIC_9) {

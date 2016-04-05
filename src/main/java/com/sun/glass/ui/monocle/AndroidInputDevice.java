@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2015, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2015, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,22 +25,52 @@
 
 package com.sun.glass.ui.monocle;
 
-class MonocleTrace {
+import java.io.IOException;
 
-    static void traceEvent(String format, Object... args) {
-        trace("traceEvent", format, args);
-    }
+/**
+ *
+ */
+class AndroidInputDevice implements Runnable, InputDevice {
 
-    static void traceConfig(String format, Object... args) {
-        trace("traceConfig", format, args);
-    }
+    private AndroidInputProcessor inputProcessor;
 
-    private static void trace(String prefix, String format, Object[] args) {
-        synchronized (System.out) {
-            System.out.print(prefix);
-            System.out.print(": ");
-            System.out.format(format, args);
-            System.out.println();
+    @Override
+    public void run() {
+        if (inputProcessor == null) {
+            System.err.println("Error: no input processor");
+            return;
         }
+       // read from the android device (change this into push)
+        // and process the events
+    }
+
+    @Override
+    public boolean isTouch() {
+        return true;
+    }
+
+    @Override
+    public boolean isMultiTouch() {
+        return true;
+    }
+
+    @Override
+    public boolean isRelative() {
+        return false;
+    }
+
+    @Override
+    public boolean is5Way() {
+        return false;
+    }
+
+    @Override
+    public boolean isFullKeyboard() {
+// if we return false, the JavaFX virtual keyboard will be used instead of the android built-in one
+        return true;
+    }
+     
+    void setInputProcessor(AndroidInputProcessor inputProcessor) {
+        this.inputProcessor = inputProcessor;
     }
 }

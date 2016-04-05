@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2015, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -22,25 +22,36 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-
 package com.sun.glass.ui.monocle;
 
-class MonocleTrace {
+class AndroidInputProcessor {
+    
+    private final AndroidInputDevice device;
+    final TouchPipeline touchPipeline;
+    private final KeyInput keyInput = new KeyInput();
 
-    static void traceEvent(String format, Object... args) {
-        trace("traceEvent", format, args);
+    AndroidInputProcessor(AndroidInputDevice device) {
+        this.device = device;
+        touchPipeline = new TouchPipeline();       
+        touchPipeline.add(TouchInput.getInstance().getBasePipeline());
+    }
+    
+    void pushEvent(TouchState state) {
+        touchPipeline.pushState(state);
+    }
+    
+    /**
+     * Called when events are waiting on the input device to be processed.
+     * Called on the runnable processor provided to the input device.
+     *
+     * @param device The device on which events are pending
+     */
+    void processEvents(AndroidInputDevice device) {
+        touchPipeline.pushState(null);
     }
 
-    static void traceConfig(String format, Object... args) {
-        trace("traceConfig", format, args);
+    synchronized void pushKeyEvent(KeyState keyState) {
+        keyInput.setState(keyState);
     }
 
-    private static void trace(String prefix, String format, Object[] args) {
-        synchronized (System.out) {
-            System.out.print(prefix);
-            System.out.print(": ");
-            System.out.format(format, args);
-            System.out.println();
-        }
-    }
 }

@@ -25,22 +25,34 @@
 
 package com.sun.glass.ui.monocle;
 
-class MonocleTrace {
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
-    static void traceEvent(String format, Object... args) {
-        trace("traceEvent", format, args);
+/** 
+ * Provide Android implementation of AcceleratedScreen
+ *
+ */
+class AndroidAcceleratedScreen extends AcceleratedScreen {
+
+
+    AndroidAcceleratedScreen(int[] attributes) throws GLException {
+        super(attributes);
     }
 
-    static void traceConfig(String format, Object... args) {
-        trace("traceConfig", format, args);
+    boolean initPlatformLibraries() {
+        return super.initPlatformLibraries();
     }
 
-    private static void trace(String prefix, String format, Object[] args) {
-        synchronized (System.out) {
-            System.out.print(prefix);
-            System.out.print(": ");
-            System.out.format(format, args);
-            System.out.println();
-        }
+    @Override
+    protected long platformGetNativeDisplay() {
+        return 0;
     }
+
+    @Override
+    protected long platformGetNativeWindow() {
+        long answer = NativePlatformFactory.getNativePlatform()
+                .getScreen().getNativeHandle();
+        return answer;
+    }
+
 }
