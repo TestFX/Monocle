@@ -13,12 +13,12 @@ low-level access.
 
 ## Build (under Windows)
 
-Clone the repository and checkout the branch.
+Clone the repository and checkout the tag.
 
 ```
 C:\> git clone https://github.com/TestFX/Monocle
 C:\> cd Monocle
-C:\> git checkout runtime-8u20
+C:\> git checkout 8u20-b26
 ```
 
 Choose the JDK version and build the jars.
@@ -42,10 +42,8 @@ list of changeset hashes at [openjfx/8u-dev/rt/tags][12].
 Example changeset hashes:
 
 - **8u20-b26:** `e56a8bbcba20` instead of `tip`.
-- **8u25-b18:** `b2021af209c3` instead of `tip`.
-- **8u31-b13:** `f1388961b89f` instead of `tip`.
 - **8u40-b27:** `e00e97499831` instead of `tip`.
-- **8u60-b06:** `5fc0ddb42776` instead of `tip`.
+- **8u60-b27:** `cff3afdde691` instead of `tip`.
 
 [10]: http://hg.openjdk.java.net/openjfx/8u-dev/rt/file/tip/modules/graphics/src/main/java/com/sun/glass/ui/monocle
 [11]: http://hg.openjdk.java.net/openjfx/8u-dev/rt/file/tip/modules/graphics/src/main/resources/com/sun/glass/ui/monocle
