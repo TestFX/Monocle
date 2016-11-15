@@ -10,4 +10,5 @@ build/
 
 # miscellaneous.
 *.cmd
-
+.DS_Store
+tags
