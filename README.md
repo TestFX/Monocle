@@ -49,6 +49,19 @@ Example changeset hashes:
 [11]: http://hg.openjdk.java.net/openjfx/8u-dev/rt/file/tip/modules/graphics/src/main/resources/com/sun/glass/ui/monocle
 [12]: http://hg.openjdk.java.net/openjfx/8u-dev/rt/tags
 
+## Automatic Update (beta)
+
+The `sync.sh` Bash script attempts to automate the process of updating to a newer version
+of Monocle from the OpenJFX repository. The script will look for the highest build number
+(such as b00, b01, etc.) for each version (such as 8u45, 8u60, etc.) and if there is no
+corresponding tag in this repository for that version/build number combination it will
+offer to open a pull-request with the changeset from the upstream OpenJFX repository.
+The PR is opened using the [hub][13] tool (which is automatically downloaded if you
+do not have it installed). This script should work on any flavor of Linux (including
+the Windows Subsystem for Linux) and macOS. Improvements to it are very welcome!
+
+[13]: https://github.com/github/hub
+
 ## License
 
 OpenJDK and OpenJFX are licensed under the [GNU General Public License, version 2, with the

@@ -11,3 +11,5 @@ build/
 # miscellaneous.
 *.cmd
 
+# Executables downloaded via sync script
+.sync/
