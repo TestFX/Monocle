@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2015, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -26,16 +26,13 @@
 package com.sun.glass.ui.monocle;
 
 import com.sun.glass.events.WindowEvent;
-import com.sun.glass.ui.Screen;
-import com.sun.javafx.tk.Toolkit;
-
+import com.sun.glass.ui.Window;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javafx.application.Platform;
 
-final class MonocleWindowManager {
+public final class MonocleWindowManager {
 
     private static MonocleWindowManager instance = new MonocleWindowManager();
 
@@ -49,7 +46,7 @@ final class MonocleWindowManager {
         //singleton
     }
 
-    static MonocleWindowManager getInstance() {
+    public static MonocleWindowManager getInstance() {
         return instance;
     }
 
@@ -63,7 +60,7 @@ final class MonocleWindowManager {
         }
         return -1;
     }
-    void toBack(MonocleWindow window) {
+    public void toBack(MonocleWindow window) {
         int index = getWindowIndex(window);
         if (index != 0 && index != -1) {
             System.arraycopy(windows, 0, windows, 1, index);
@@ -71,7 +68,7 @@ final class MonocleWindowManager {
         }
     }
 
-    void toFront(MonocleWindow window) {
+    public void toFront(MonocleWindow window) {
         int index = getWindowIndex(window);
         if (index != windows.length - 1 && index != -1) {
             System.arraycopy(windows, index + 1, windows, index,
@@ -80,7 +77,7 @@ final class MonocleWindowManager {
         }
     }
 
-    int addWindow(MonocleWindow window) {
+    public int addWindow(MonocleWindow window) {
         int index = getWindowIndex(window);
         if (index == -1) {
             windows = Arrays.copyOf(windows, windows.length + 1);
@@ -90,7 +87,7 @@ final class MonocleWindowManager {
 
     }
 
-    boolean closeWindow(MonocleWindow window) {
+    public boolean closeWindow(MonocleWindow window) {
         int index = getWindowIndex(window);
         if (index != -1) {
             System.arraycopy(windows, index + 1, windows, index,
@@ -111,15 +108,15 @@ final class MonocleWindowManager {
 
     }
 
-    boolean minimizeWindow(MonocleWindow window) {
+    public boolean minimizeWindow(MonocleWindow window) {
         return true;
     }
 
-    boolean maximizeWindow(MonocleWindow window) {
+    public boolean maximizeWindow(MonocleWindow window) {
         return true;
     }
 
-    boolean requestFocus(MonocleWindow window) {
+    public boolean requestFocus(MonocleWindow window) {
         int index = getWindowIndex(window);
         if (index != -1) {
             focusedWindow = window;
@@ -130,15 +127,15 @@ final class MonocleWindowManager {
         }
     }
 
-    boolean grabFocus(MonocleWindow window) {
+    public boolean grabFocus(MonocleWindow window) {
         return true;
     }
 
-    void ungrabFocus(MonocleWindow window) {
+    public void ungrabFocus(MonocleWindow window) {
 
     }
 
-    MonocleWindow getWindowForLocation(int x, int y) {
+    public MonocleWindow getWindowForLocation(int x, int y) {
         for (int i = windows.length - 1; i >=0 ; i--) {
             MonocleWindow w = windows[i];
             if (x >= w.getX() && y >= w.getY()
@@ -151,36 +148,20 @@ final class MonocleWindowManager {
         return null;
     }
 
-    void notifyFocusDisabled(MonocleWindow window) {
+    public void notifyFocusDisabled(MonocleWindow window) {
         if (window != null) {
             window._notifyFocusDisabled();
         }
     }
-
-    MonocleWindow getFocusedWindow() {
+    
+    public MonocleWindow getFocusedWindow() {
         return focusedWindow;
     }
 
-    void repaintAll() {
+    public void repaintAll() {
         for (int i = 0; i < windows.length; i++) {
-            MonocleView view = (MonocleView) windows[i].getView();
-            if (view != null) {
-                view.notifyRepaint();
-            }
+            ((MonocleView)(windows[i].getView())).notifyRepaint();
         }
-    }
-
-    static void repaintFromNative () {
-        Platform.runLater(new Runnable () {
-
-            @Override
-            public void run() {
-                Screen.notifySettingsChanged();
-                instance.getFocusedWindow().setFullScreen(true);
-                instance.repaintAll();
-                Toolkit.getToolkit().requestNextPulse();
-            }
-        });
     }
 
 }

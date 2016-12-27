@@ -33,15 +33,15 @@ import java.nio.IntBuffer;
 
 final class MonoclePixels extends Pixels {
 
-    MonoclePixels(int width, int height, ByteBuffer data) {
+    protected MonoclePixels(int width, int height, ByteBuffer data) {
         super(width, height, data);
     }
 
-    MonoclePixels(int width, int height, IntBuffer data) {
+    protected MonoclePixels(int width, int height, IntBuffer data) {
         super(width, height, data);
     }
 
-    MonoclePixels(int width, int height, IntBuffer data, float scale) {
+    protected MonoclePixels(int width, int height, IntBuffer data, float scale) {
         super(width, height, data, scale);
     }
 

@@ -29,13 +29,8 @@ import com.sun.glass.ui.Size;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
-/**
- * Provides an implementation of NativeCursor that overlays a cursor image on
- * top of a software-rendered framebuffer.
- */
-class SoftwareCursor extends NativeCursor {
+public class SoftwareCursor extends NativeCursor {
 
     private ByteBuffer cursorBuffer;
     private int renderX;
@@ -44,12 +39,12 @@ class SoftwareCursor extends NativeCursor {
     private int hotspotY;
 
     @Override
-    Size getBestSize() {
+    public Size getBestSize() {
         return new Size(16, 16);
     }
 
     @Override
-    void setVisibility(boolean visibility) {
+    public void setVisibility(boolean visibility) {
         if (visibility != isVisible) {
             isVisible = visibility;
             MonocleWindowManager.getInstance().repaintAll();
@@ -57,14 +52,13 @@ class SoftwareCursor extends NativeCursor {
     }
 
     @Override
-    void setImage(byte[] cursorImage) {
+    public void setImage(byte[] cursorImage) {
         cursorBuffer = ByteBuffer.allocate(cursorImage.length);
         NativeCursors.colorKeyCursor(cursorImage, cursorBuffer.asIntBuffer(), 32, 0);
-        cursorBuffer = cursorBuffer.order(ByteOrder.nativeOrder());
     }
 
     @Override
-    void setLocation(int x, int y) {
+    public void setLocation(int x, int y) {
         int renderX = x - hotspotX;
         int renderY = y - hotspotY;
         if (renderX != this.renderX || renderY != this.renderY) {
@@ -75,24 +69,24 @@ class SoftwareCursor extends NativeCursor {
     }
 
     @Override
-    void setHotSpot(int hotspotX, int hotspotY) {
+    public void setHotSpot(int hotspotX, int hotspotY) {
         this.hotspotX = hotspotX;
         this.hotspotY = hotspotY;
     }
 
     @Override
-    void shutdown() {
+    public void shutdown() {
     }
 
-    int getRenderX() {
+    public int getRenderX() {
         return renderX;
     }
 
-    int getRenderY() {
+    public int getRenderY() {
         return renderY;
     }
 
-    Buffer getCursorBuffer() {
+    public Buffer getCursorBuffer() {
         cursorBuffer.clear();
         return cursorBuffer;
     }

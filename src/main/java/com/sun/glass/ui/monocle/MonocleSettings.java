@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2014, 2015, Oracle and/or its affiliates. All rights reserved.
+package com.sun.glass.ui.monocle;/*
+ * Copyright (c) 2014, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -23,23 +23,21 @@
  * questions.
  */
 
-package com.sun.glass.ui.monocle;
-
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-class MonocleSettings {
+public class MonocleSettings {
 
-    static final MonocleSettings settings = AccessController.doPrivileged(
+    public static final MonocleSettings settings = AccessController.doPrivileged(
             (PrivilegedAction<MonocleSettings>) () -> new MonocleSettings());
 
-    final boolean traceEvents;
-    final boolean traceEventsVerbose;
-    final boolean tracePlatformConfig;
+    public final boolean traceEvents;
+    public final boolean traceEventsVerbose;
+    public final boolean tracePlatformConfig;
 
     private MonocleSettings() {
+        traceEvents = Boolean.getBoolean("monocle.input.traceEvents");
         traceEventsVerbose = Boolean.getBoolean("monocle.input.traceEvents.verbose");
-        traceEvents = traceEventsVerbose || Boolean.getBoolean("monocle.input.traceEvents");
         tracePlatformConfig = Boolean.getBoolean("monocle.platform.traceConfig");
     }
 

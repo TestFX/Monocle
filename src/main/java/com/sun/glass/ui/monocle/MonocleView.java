@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2015, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,13 +25,15 @@
 
 package com.sun.glass.ui.monocle;
 
+import com.sun.glass.events.ViewEvent;
 import com.sun.glass.ui.Pixels;
 import com.sun.glass.ui.View;
 import com.sun.glass.ui.Window;
 
+import java.nio.Buffer;
 import java.util.Map;
 
-final class MonocleView extends View {
+public final class MonocleView extends View {
 
     MonocleView() {
     }
@@ -48,15 +50,15 @@ final class MonocleView extends View {
     private int x;
     private int y;
 
-    static long _getMultiClickTime() {
+    protected static long _getMultiClickTime() {
         return multiClickTime;
     }
 
-    static int _getMultiClickMaxX() {
+    protected static int _getMultiClickMaxX() {
         return multiClickMaxX;
     }
 
-    static int _getMultiClickMaxY() {
+    protected static int _getMultiClickMaxY() {
         return multiClickMaxY;
     }
 
@@ -104,13 +106,13 @@ final class MonocleView extends View {
      */
 
     @Override
-    protected void notifyKey(int type, int keyCode, char[] keyChars,
+    public void notifyKey(int type, int keyCode, char[] keyChars,
                           int modifiers) {
         super.notifyKey(type, keyCode, keyChars, modifiers);
     }
 
     @Override
-    protected void notifyMouse(int type, int button,
+    public void notifyMouse(int type, int button,
                             int x, int y, int xAbs, int yAbs, int modifiers,
                             boolean isPopupTrigger, boolean isSynthesized) {
         super.notifyMouse(type, button, x, y, xAbs, yAbs, modifiers,
@@ -119,7 +121,7 @@ final class MonocleView extends View {
     }
 
     @Override
-    protected void notifyScroll(int x, int y, int xAbs, int yAbs,
+    public void notifyScroll(int x, int y, int xAbs, int yAbs,
                              double deltaX, double deltaY, int modifiers,
                              int lines, int chars,
                              int defaultLines, int defaultChars,
@@ -130,7 +132,7 @@ final class MonocleView extends View {
                            yMultiplier);
     }
 
-    void notifyRepaint() {
+    protected void notifyRepaint() {
         super.notifyRepaint(x, y, getWidth(), getHeight());
     }
 
@@ -146,39 +148,34 @@ final class MonocleView extends View {
 
     //DnD
     @Override
-    protected int notifyDragEnter(int x, int y, int absx, int absy, int recommendedDropAction) {
+    public int notifyDragEnter(int x, int y, int absx, int absy, int recommendedDropAction) {
         return super.notifyDragEnter(x, y, absx, absy, recommendedDropAction);
     }
 
     @Override
-    protected void notifyDragLeave() {
+    public void notifyDragLeave() {
         super.notifyDragLeave();
     }
 
     @Override
-    protected int notifyDragDrop(int x, int y, int absx, int absy, int recommendedDropAction) {
+    public int notifyDragDrop(int x, int y, int absx, int absy, int recommendedDropAction) {
         return super.notifyDragDrop(x, y, absx, absy, recommendedDropAction);
     }
 
     @Override
-    protected int notifyDragOver(int x, int y, int absx, int absy, int recommendedDropAction) {
+    public int notifyDragOver(int x, int y, int absx, int absy, int recommendedDropAction) {
         return super.notifyDragOver(x, y, absx, absy, recommendedDropAction);
     }
 
     @Override
-    protected void notifyDragEnd(int performedAction) {
+    public void notifyDragEnd(int performedAction) {
         super.notifyDragEnd(performedAction);
     }
 
-    //Menu event - i.e context menu hint (usually mouse right click)
+    //Menu event - i.e context menu hint (usually mouse right click) 
     @Override
     protected void notifyMenu(int x, int y, int xAbs, int yAbs, boolean isKeyboardTrigger) {
         super.notifyMenu(x, y, xAbs, yAbs, isKeyboardTrigger);
-    }
-
-    @Override
-    protected int _getNativeFrameBuffer(long ptr) {
-        return 0;
     }
 
     @Override
