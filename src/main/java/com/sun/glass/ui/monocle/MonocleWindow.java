@@ -28,15 +28,16 @@ package com.sun.glass.ui.monocle;
 import com.sun.glass.events.MouseEvent;
 import com.sun.glass.events.ViewEvent;
 import com.sun.glass.events.WindowEvent;
-import com.sun.glass.ui.Application;
 import com.sun.glass.ui.Cursor;
 import com.sun.glass.ui.Pixels;
+import com.sun.glass.ui.PlatformFactory;
 import com.sun.glass.ui.Screen;
 import com.sun.glass.ui.View;
 import com.sun.glass.ui.Window;
+import com.sun.glass.ui.Application;
 
 
-final class MonocleWindow extends Window {
+public final class MonocleWindow extends Window {
 
 
     private static final int STATE_NORMAL = 0;
@@ -51,11 +52,11 @@ final class MonocleWindow extends Window {
     private int maxW = -1;
     private int maxH = -1;
 
-    MonocleWindow(Window owner, Screen screen, int styleMask) {
+    protected MonocleWindow(Window owner, Screen screen, int styleMask) {
         super(owner, screen, styleMask);
     }
 
-    MonocleWindow(long parent) {
+    protected MonocleWindow(long parent) {
         super(parent);
     }
 
@@ -435,7 +436,7 @@ final class MonocleWindow extends Window {
         notifyFocusUngrab();
     }
 
-    void _notifyFocusDisabled() {
+    protected void _notifyFocusDisabled() {
         notifyFocusDisabled();
     }
 

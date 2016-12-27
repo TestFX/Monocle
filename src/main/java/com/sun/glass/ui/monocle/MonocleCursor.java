@@ -33,18 +33,18 @@ import java.io.IOException;
 import java.io.InputStream;
 
 final class MonocleCursor extends Cursor {
-    private byte[] image;
-    private int hotspotX;
-    private int hotspotY;
+    byte[] image;
+    int hotspotX;
+    int hotspotY;
 
-    MonocleCursor(int type) {
+    protected MonocleCursor(int type) {
         super(type);
         image = getImage(type);
         hotspotX = 0;
         hotspotY = 0;
     }
 
-    MonocleCursor(int x, int y, Pixels pixels) {
+    protected MonocleCursor(int x, int y, Pixels pixels) {
         super(x, y, pixels);
     }
 

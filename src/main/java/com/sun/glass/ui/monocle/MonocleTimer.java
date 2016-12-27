@@ -31,10 +31,10 @@ import com.sun.glass.ui.Timer;
  * Monocle implementation class for Timer.
  */
 final class MonocleTimer extends Timer {
-    private static java.util.Timer timer;
+    static java.util.Timer timer;
     private java.util.TimerTask task;
 
-    MonocleTimer(final Runnable runnable) {
+    protected MonocleTimer(final Runnable runnable) {
         super(runnable);
     }
 
