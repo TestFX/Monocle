@@ -8,7 +8,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6"
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3"
     }
 }
 
@@ -21,7 +21,7 @@ apply from: rootProject.file("gradle/welcome.gradle")
 
 // task to add gradle wrapper files.
 task("wrapper", type: Wrapper, group: "build setup") {
-    gradleVersion = "2.12"
+    gradleVersion = "3.2.1"
     distributionUrl = "https://services.gradle.org/distributions/" +
             "gradle-${gradleVersion}-all.zip"
 }
