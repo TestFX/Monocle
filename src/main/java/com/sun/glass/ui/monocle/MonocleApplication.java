@@ -36,12 +36,14 @@ import com.sun.glass.ui.Timer;
 import com.sun.glass.ui.View;
 import com.sun.glass.ui.Window;
 import javafx.collections.SetChangeListener;
+import javafx.scene.control.TextInputDialog;
 
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Arrays;
 
 public final class MonocleApplication extends Application {
 
@@ -261,7 +263,20 @@ public final class MonocleApplication extends Application {
             int type, boolean multipleMode,
             ExtensionFilter[] extensionFilters,
             int defaultFilterIndex) {
-        throw new UnsupportedOperationException();
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.showAndWait();
+        File[] files;
+        String filePaths = dialog.getEditor().getText();
+        if (filePaths != null && !filePaths.isEmpty()) {
+            String[] filePathParts = filePaths.split("\t");
+            files = new File[filePathParts.length];
+            for (int i = 0; i < filePathParts.length; i++) {
+                files[i] = new File(filePathParts[i]);
+            }
+        } else {
+            files = new File[0];
+        }
+        return new FileChooserResult(Arrays.asList(files), null);
     }
 
     @Override
