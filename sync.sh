@@ -36,11 +36,17 @@ submit_pr() {
   build=$2
   sha=$3
   hub=$4
+  jdk=$5
   read -p "Would you like to open a PR for ${version}-${build}? " -n 1 -r
   echo
   if [[ $REPLY =~ ^[Yy]$ ]]; then
-    wget --quiet --output-document="$sha"-src.tar.gz http://hg.openjdk.java.net/openjfx/8u-dev/rt/archive/"$sha".tar.gz/modules/graphics/src/main/java/com/sun/glass/ui/monocle/
-    wget --quiet --output-document="$sha"-res.tar.gz http://hg.openjdk.java.net/openjfx/8u-dev/rt/archive/"$sha".tar.gz/modules/graphics/src/main/resources/com/sun/glass/ui/monocle/
+    if [ "$jdk" == "8" ]; then
+      wget --quiet --output-document="$sha"-src.tar.gz http://hg.openjdk.java.net/openjfx/8u-dev/rt/archive/"$sha".tar.gz/modules/graphics/src/main/java/com/sun/glass/ui/monocle/
+      wget --quiet --output-document="$sha"-res.tar.gz http://hg.openjdk.java.net/openjfx/8u-dev/rt/archive/"$sha".tar.gz/modules/graphics/src/main/resources/com/sun/glass/ui/monocle/
+    else
+      wget --quiet --output-document="$sha"-src.tar.gz http://hg.openjdk.java.net/openjfx/9-dev/rt/archive/"$sha".tar.gz/modules/javafx.graphics/src/main/java/com/sun/glass/ui/monocle/
+      wget --quiet --output-document="$sha"-res.tar.gz http://hg.openjdk.java.net/openjfx/9-dev/rt/archive/"$sha".tar.gz/modules/javafx.graphics/src/main/resources/com/sun/glass/ui/monocle/
+    fi
     tar -xf "$sha"-src.tar.gz --strip-components 3
     rm "$sha"-src.tar.gz
     tar -xf "$sha"-res.tar.gz --strip-components 3
@@ -101,6 +107,7 @@ install_prereqs() {
 fetch_highest_builds() {
   tag_url=$1
   start_hash=$2
+  jdk=$3
   raw_tags=$(curl -s "${tag_url}" | ${pup} '.tagEntry text{}' | sed "/$start_hash/q" | xargs echo -n)
 
   read -a raw <<< "$raw_tags"
@@ -143,7 +150,7 @@ fetch_highest_builds() {
         else
           # There is a newer build available
           printf "The latest build for version %s is %s in upstream, but there is a newer build %s\\n" "$version" "$build" "${highest_builds[${version}]}"
-          submit_pr "$version" "${highest_builds[${version}]}" "${tags["$version"-"${highest_builds[$version]}"]}" "$hub"
+          submit_pr "$version" "${highest_builds[${version}]}" "${tags["$version"-"${highest_builds[$version]}"]}" "$hub" "$jdk"
           highest_builds[${version}]=''
         fi
       fi
@@ -152,7 +159,7 @@ fetch_highest_builds() {
   for key in "${!highest_builds[@]}"
   do
     if [[ ! -z "${highest_builds[$key]}" ]]; then
-      submit_pr "$key" "${highest_builds[${key}]}" "${tags["$key"-"${highest_builds[$key]}"]}" "$hub"
+      submit_pr "$key" "${highest_builds[${key}]}" "${tags["$key"-"${highest_builds[$key]}"]}" "$hub" "$jdk"
     fi
   done
 }
@@ -163,5 +170,5 @@ require_executable wget
 require_executable unzip
 install_prereqs
 
-fetch_highest_builds "http://hg.openjdk.java.net/openjfx/8u-dev/rt/tags" "3a7f004c4995"
-fetch_highest_builds "http://hg.openjdk.java.net/openjfx/9-dev/rt/tags" "dc2bda380efe"
+# fetch_highest_builds "http://hg.openjdk.java.net/openjfx/8u-dev/rt/tags" "3a7f004c4995" "8"
+fetch_highest_builds "http://hg.openjdk.java.net/openjfx/9-dev/rt/tags" "dc2bda380efe" "9"
