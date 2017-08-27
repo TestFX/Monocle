@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2015, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2014, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -97,11 +97,5 @@ public interface NativeScreen {
      * An Object to lock against when swapping screen buffers.
      */
     public static final Object framebufferSwapLock = new Object();
-
-    /**
-     * Return the scale factor between the physical pixels and the logical pixels
-     * e.g. hdpi = 1.5, xhdpi = 2.0
-     */
-    public float getScale();
 
 }
