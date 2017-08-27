@@ -101,7 +101,6 @@ install_prereqs() {
 fetch_highest_builds() {
   tag_url=$1
   start_hash=$2
-  echo "Fetching highest builds for tag url ${tag_url} with starting hash ${start_hash}"
   raw_tags=$(curl -s "${tag_url}" | ${pup} '.tagEntry text{}' | sed "/$start_hash/q" | xargs echo -n)
 
   read -a raw <<< "$raw_tags"
@@ -113,7 +112,6 @@ fetch_highest_builds() {
     fi
   done
 
-  printf '%s\n' "${tags[@]}"
   declare -A highest_builds
 
   for key in "${!tags[@]}"
