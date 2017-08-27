@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2015, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2014, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -105,11 +105,6 @@ class FBDevScreen implements NativeScreen {
     }
 
     @Override
-    public float getScale() {
-        return 1.0f;
-    }
-
-    @Override
     public int getDPI() {
         return 96; // no way to read DPI from sysfs and ioctl returns junk values
     }
@@ -165,9 +160,9 @@ class FBDevScreen implements NativeScreen {
         int w = getWidth();
         for (int i = 0; i < h; ++i) {
             for (int j = 0; j < w; ++j) {
-                c.accept(i * w + j);
+                c.accept(i * w + j);   
             }
-        }
+        }                 
     }
 
     @Override
@@ -243,14 +238,14 @@ class FBDevScreen implements NativeScreen {
     public synchronized ByteBuffer getScreenCapture() {
         ByteBuffer ret = null;
         ByteBuffer bb = linuxFB.getMappedBuffer();
-        if (bb != null) {
+        if (bb != null) {               
             bb.position(linuxFB.getNativeOffset());
             bb.order(ByteOrder.nativeOrder());
             ret = ByteBuffer.allocate(getHeight() * getWidth() * 4);
             IntBuffer dst = ret.asIntBuffer();
             if (getDepth() == 32) {
                 IntBuffer src = bb.asIntBuffer();
-                forEachPixelOffset(offset -> dst.put(src.get(offset)));
+                forEachPixelOffset(offset -> dst.put(src.get(offset))); 
             } else {
                 ShortBuffer src = bb.asShortBuffer();
                 forEachPixelOffset(offset -> {
@@ -259,8 +254,8 @@ class FBDevScreen implements NativeScreen {
                              ((p & 0xF800) << 8) |
                              ((p & 0x7E0) << 5) |
                              ((p & 0x1F) << 3);
-                    dst.put(pi);
-                    });
+                    dst.put(pi); 
+                    }); 
             }
 
             linuxFB.releaseMappedBuffer(bb);
