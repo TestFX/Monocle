@@ -21,7 +21,7 @@ apply from: rootProject.file("gradle/welcome.gradle")
 
 // task to add gradle wrapper files.
 task("wrapper", type: Wrapper, group: "build setup") {
-    gradleVersion = "3.2.1"
+    gradleVersion = "4.1"
     distributionUrl = "https://services.gradle.org/distributions/" +
             "gradle-${gradleVersion}-all.zip"
 }
@@ -54,8 +54,8 @@ task("initSourceDirs", group: "build setup").doLast {
 apply plugin: "java"
 
 // java language level.
-sourceCompatibility = "1.8"
-targetCompatibility = "1.8"
+sourceCompatibility = "1.9"
+targetCompatibility = "1.9"
 
 // configure publish tasks.
 apply from: rootProject.file("gradle/publish.gradle")
