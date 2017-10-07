@@ -85,6 +85,18 @@ artifacts {
     archives javadocJar
 }
 
+compileJava {
+    options.compilerArgs += [
+            "--add-opens", "java.base/java.lang=ALL-UNNAMED",
+            "--add-opens", "java.base/java.util=ALL-UNNAMED",
+            "--add-exports", "javafx.graphics/com.sun.glass.ui=ALL-UNNAMED",
+            "--add-exports", "javafx.graphics/com.sun.glass.events=ALL-UNNAMED",
+            "--add-exports", "javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED",
+            "--add-exports", "javafx.graphics/com.sun.glass.utils=ALL-UNNAMED",
+            "--add-exports", "javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED"
+    ]
+}
+
 ext {
     def buildTimeAndDate = new Date()
     buildDate = buildTimeAndDate.format("yyyy-MM-dd")
@@ -110,6 +122,14 @@ jar {
     )
 }
 
+// TODO: Get Javadoc working again with Java 9
+tasks.withType(Javadoc).all { enabled = false }
+
 javadoc {
     options.addStringOption("Xdoclint:none", "-quiet")
+    options.addStringOption('-add-exports', 'javafx.graphics/com.sun.glass.ui=ALL-UNNAMED')
+    options.addStringOption('-add-exports', 'javafx.graphics/com.sun.glass.events=ALL-UNNAMED')
+    options.addStringOption('-add-exports', 'javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED')
+    options.addStringOption('-add-exports', 'javafx.graphics/com.sun.glass.utils=ALL-UNNAMED')
+    options.addStringOption('-add-exports', 'javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED')
 }
