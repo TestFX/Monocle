@@ -1,6 +1,9 @@
 apply plugin: "maven-publish"
 apply plugin: "com.jfrog.bintray"
 
+if (!project.hasProperty("bintrayUsername")) ext.bintrayUsername = "invalid"
+if (!project.hasProperty("bintrayApiKey")) ext.bintrayApiKey = "invalid"
+
 def pomConfig = {
     name project.name
     description project.description
@@ -38,8 +41,8 @@ publishing {
 }
 
 bintray {
-    user = project.bintrayUser
-    key = project.bintrayKey
+    user = project.bintrayUsername
+    key = project.bintrayApiKey
     publications = ["mavenJava"]
 
     dryRun = false
@@ -60,17 +63,7 @@ bintray {
         publicDownloadNumbers = true
 
         version {
-            name = project.version
             vcsTag = project.version
-
-            gpg {
-                sign = true
-            }
-            mavenCentralSync {
-                sync = true
-                user = project.sonatypeUsername
-                password = project.sonatypePassword
-            }
         }
     }
 }
