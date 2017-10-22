@@ -93,8 +93,8 @@ jar to:
 
 	<JDK_HOME>/jre/lib/ext
 
-## Maven Configuration
-### Maven Configuration on Java 9
+## Monocle Maven Configuration
+### Monocle Maven Configuration on Java 9
 
 	<dependency>
 	  <groupId>org.testfx</groupId>
@@ -103,7 +103,7 @@ jar to:
 	  <scope>test</scope>
 	</dependency>
 
-### Maven Configuration on Java 8
+### Monocle Maven Configuration on Java 8
 
 	<dependency>
 	  <groupId>org.testfx</groupId>
