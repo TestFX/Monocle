@@ -3,12 +3,17 @@
 # Usage info
 show_help() {
 cat << EOF
-Usage: ${0##*/} [-hf]
+Usage: ${0##*/} [-h]
 Syncs the TestFX Monocle repository with upstream.
 
     -h          display this help and exit
 EOF
 }
+
+if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
+  show_help
+  exit 0
+fi
 
 red=$(tput setaf 1)
 green=$(tput setaf 2)
