@@ -11,6 +11,24 @@ low-level access.
 [1]: https://wiki.openjdk.java.net/display/OpenJFX/Monocle
 [2]: http://mail.openjdk.java.net/pipermail/openjfx-dev/2014-November/016111.html
 
+## Gradle
+
+```gradle
+testCompile "org.testfx:openjfx-monocle:jdk-9+181" // For Java 9
+testCompile "org.testfx:openjfx-monocle:8u76-b04" // For Java 8
+```
+
+## Maven
+
+```xml
+<dependency>
+    <groupId>org.testfx</groupId>
+    <artifactId>openjfx-monocle</artifactId>
+    <version>jdk-9+181</version> <!-- 8u76-b04 for Java 8 -->
+    <scope>test</scope>
+</dependency>
+```
+
 ## Build (under Windows)
 
 Clone the repository and checkout the tag.
