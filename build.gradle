@@ -1,6 +1,21 @@
 //-------------------------------------------------------------------------------------------------
 // GRADLE PLUGINS.
 //-------------------------------------------------------------------------------------------------
+ext.openjfxVersion = '11-ea+19'
+
+static def getOSName() {
+    final String osName = System.getProperty("os.name").toLowerCase()
+    if (osName.contains("linux")) {
+        return ("linux")
+    } else if (osName.contains("mac os x") || osName.contains("darwin") || osName.contains("osx")) {
+        return ("mac")
+    } else if (osName.contains("windows")) {
+        return ("win")
+    }
+    return ""
+}
+
+ext.platform = getOSName()
 
 buildscript {
     repositories {
@@ -8,7 +23,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3"
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4"
     }
 }
 
@@ -21,7 +36,7 @@ apply from: rootProject.file("gradle/welcome.gradle")
 
 // task to add gradle wrapper files.
 task("wrapper", type: Wrapper, group: "build setup") {
-    gradleVersion = "4.1"
+    gradleVersion = "4.9"
     distributionUrl = "https://services.gradle.org/distributions/" +
             "gradle-${gradleVersion}-all.zip"
 }
@@ -54,8 +69,20 @@ task("initSourceDirs", group: "build setup").doLast {
 apply plugin: "java"
 
 // java language level.
-sourceCompatibility = "1.9"
-targetCompatibility = "1.9"
+sourceCompatibility = "10"
+targetCompatibility = "10"
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile "org.openjfx:javafx-base:${openjfxVersion}:${platform}"
+    compile "org.openjfx:javafx-controls:${openjfxVersion}:${platform}"
+    compile "org.openjfx:javafx-graphics:${openjfxVersion}:${platform}"
+    compile "org.openjfx:javafx-swing:${openjfxVersion}:${platform}"
+    compile "org.openjfx:javafx-fxml:${openjfxVersion}:${platform}"
+}
 
 // configure publish tasks.
 apply from: rootProject.file("gradle/publish-bintray.gradle")
