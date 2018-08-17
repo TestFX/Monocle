@@ -214,6 +214,11 @@ class MonocleRobot extends GlassRobot {
             int colStop = Math.min(x + width, scrWidth);
             for (int row = y; row < rowStop; row++) {
                 for (int col = x; col < colStop; col++) {
+                    if (row * scrWidth + col >= data.length - 1) {
+                        // This can happen if Glass and (headless) Monocle disagree on the screen size.
+                        // In which case, we truncate the image to the Glass bounds.
+                        break;
+                    }
                     data[row * scrWidth + col] = buffer.get(row * scrWidth + col);
                 }
             }
