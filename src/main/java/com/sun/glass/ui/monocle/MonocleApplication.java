@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2016, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2018, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -28,8 +28,8 @@ import com.sun.glass.ui.Application;
 import com.sun.glass.ui.CommonDialogs.ExtensionFilter;
 import com.sun.glass.ui.CommonDialogs.FileChooserResult;
 import com.sun.glass.ui.Cursor;
+import com.sun.glass.ui.GlassRobot;
 import com.sun.glass.ui.Pixels;
-import com.sun.glass.ui.Robot;
 import com.sun.glass.ui.Screen;
 import com.sun.glass.ui.Size;
 import com.sun.glass.ui.Timer;
@@ -38,7 +38,6 @@ import com.sun.glass.ui.Window;
 import javafx.collections.SetChangeListener;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.security.AccessController;
@@ -209,7 +208,7 @@ public final class MonocleApplication extends Application {
     }
 
     @Override
-    public Robot createRobot() {
+    public GlassRobot createRobot() {
         return new MonocleRobot();
     }
 
