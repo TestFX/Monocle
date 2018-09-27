@@ -1,7 +1,3 @@
-//-------------------------------------------------------------------------------------------------
-// GRADLE PLUGINS.
-//-------------------------------------------------------------------------------------------------
-
 buildscript {
     repositories {
         jcenter()
@@ -17,9 +13,9 @@ apply from: rootProject.file("gradle/welcome.gradle")
 
 // task to add gradle wrapper files.
 task("wrapper", type: Wrapper, group: "build setup") {
-    gradleVersion = "4.9"
+    gradleVersion = "4.10.2"
     distributionUrl = "https://services.gradle.org/distributions/" +
-            "gradle-${gradleVersion}-all.zip"
+            "gradle-${gradleVersion}-bin.zip"
 }
 
 // task to print gradle and groovy versions.
@@ -42,7 +38,7 @@ task("initSourceDirs", group: "build setup").doLast {
     for (sourceDir in sourceDirs) { sourceDir.mkdirs() }
 }
 
-ext.openjfxVersion = '11-ea+19'
+ext.openjfxVersion = '11-ea+25'
 
 static def getOSName() {
     final String osName = System.getProperty("os.name").toLowerCase()
@@ -69,8 +65,6 @@ dependencies {
     compile "org.openjfx:javafx-base:${openjfxVersion}:${platform}"
     compile "org.openjfx:javafx-controls:${openjfxVersion}:${platform}"
     compile "org.openjfx:javafx-graphics:${openjfxVersion}:${platform}"
-    compile "org.openjfx:javafx-swing:${openjfxVersion}:${platform}"
-    compile "org.openjfx:javafx-fxml:${openjfxVersion}:${platform}"
 }
 
 // java language level.
@@ -107,8 +101,6 @@ artifacts {
 
 compileJava {
     options.compilerArgs += [
-            "--add-opens", "java.base/java.lang=ALL-UNNAMED",
-            "--add-opens", "java.base/java.util=ALL-UNNAMED",
             "--add-exports", "javafx.graphics/com.sun.glass.ui=ALL-UNNAMED",
             "--add-exports", "javafx.graphics/com.sun.glass.events=ALL-UNNAMED",
             "--add-exports", "javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED",
@@ -147,7 +139,8 @@ jar {
         "Specification-Vendor": project.vendor,
         "Implementation-Title": project.name,
         "Implementation-Version": project.version,
-        "Implementation-Vendor": project.vendor
+        "Implementation-Vendor": project.vendor,
+        "Automatic-Module-Name": "org.testfx.monocle",
     )
 }
 
