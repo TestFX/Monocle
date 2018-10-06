@@ -8,7 +8,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3"
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4"
     }
 }
 
@@ -21,9 +21,9 @@ apply from: rootProject.file("gradle/welcome.gradle")
 
 // task to add gradle wrapper files.
 task("wrapper", type: Wrapper, group: "build setup") {
-    gradleVersion = "4.1"
+    gradleVersion = "4.10.2"
     distributionUrl = "https://services.gradle.org/distributions/" +
-            "gradle-${gradleVersion}-all.zip"
+            "gradle-${gradleVersion}-bin.zip"
 }
 
 // task to print gradle and groovy versions.
@@ -127,7 +127,8 @@ jar {
         "Specification-Vendor": project.vendor,
         "Implementation-Title": project.name,
         "Implementation-Version": project.version,
-        "Implementation-Vendor": project.vendor
+        "Implementation-Vendor": project.vendor,
+        "Automatic-Module-Name": "org.testfx.monocle",
     )
 }
 
