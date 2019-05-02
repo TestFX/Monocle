@@ -18,6 +18,8 @@ fi
 red=$(tput setaf 1)
 green=$(tput setaf 2)
 reset=$(tput sgr0)
+separator='+'
+
 require_executable() {
   if ! check_executable "${1}"; then
     >&2 echo "${red}${BASENAME}: '${1}' not found in PATH or not executable.${reset}"
@@ -27,7 +29,7 @@ require_executable() {
 
 find_git_remote() {
   git remote -v \
-    | awk '$2 ~ /github.com[:\/]testfx\/monocle/ && $3 == "(fetch)" {print $1; exit}'
+    | awk 'tolower($2) ~ /github.com[:\/]testfx\/monocle/ && $3 == "(fetch)" {print $1; exit}'
 }
 
 submit_pr() {
@@ -45,6 +47,11 @@ submit_pr() {
     tar -xf "$sha"-res.tar.gz --strip-components 3
     rm "$sha"-res.tar.gz
     remote="$(find_git_remote)"
+    if [[ -z "$remote" ]]; then
+      echo "${red}✘ Error (git): Could not find remote with URL matching github.com/testfx/monocle!${reset}" >&2
+      printf "You can add the upstream TestFX repository with 'git remote add upstream https://github.com/testfx/monocle\\n"
+      exit
+    fi
     printf "Opening PR to %s for %s\\n" "$remote" "$version"-"$build"
     printf "Summary of changes:\\n"
     git --no-pager diff --stat
@@ -116,7 +123,6 @@ fetch_highest_builds() {
   tag_url=$1
   start_hash=$2
   raw_tags=$(curl -s "${tag_url}" | ${pup} '.tagEntry text{}' | sed "/$start_hash/q" | xargs echo -n)
-  separator='+'
   read -a raw <<< "$raw_tags"
   declare -A tags
 
