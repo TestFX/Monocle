@@ -18,12 +18,6 @@ fi
 red=$(tput setaf 1)
 green=$(tput setaf 2)
 reset=$(tput sgr0)
-
-# Checks if a program is in the user's PATH, and is executable.
-check_executable() {
-  test -x "$(command -v "${1}")"
-}
-
 require_executable() {
   if ! check_executable "${1}"; then
     >&2 echo "${red}${BASENAME}: '${1}' not found in PATH or not executable.${reset}"
@@ -41,17 +35,11 @@ submit_pr() {
   build=$2
   sha=$3
   hub=$4
-  jdk=$5
   read -p "Would you like to open a PR for ${version}-${build}? " -n 1 -r
   echo
   if [[ $REPLY =~ ^[Yy]$ ]]; then
-    if [ "$jdk" == "8" ]; then
-      wget --quiet --output-document="$sha"-src.tar.gz http://hg.openjdk.java.net/openjfx/8u-dev/rt/archive/"$sha".tar.gz/modules/graphics/src/main/java/com/sun/glass/ui/monocle/
-      wget --quiet --output-document="$sha"-res.tar.gz http://hg.openjdk.java.net/openjfx/8u-dev/rt/archive/"$sha".tar.gz/modules/graphics/src/main/resources/com/sun/glass/ui/monocle/
-    else
-      wget --quiet --output-document="$sha"-src.tar.gz http://hg.openjdk.java.net/openjfx/9-dev/rt/archive/"$sha".tar.gz/modules/javafx.graphics/src/main/java/com/sun/glass/ui/monocle/
-      wget --quiet --output-document="$sha"-res.tar.gz http://hg.openjdk.java.net/openjfx/9-dev/rt/archive/"$sha".tar.gz/modules/javafx.graphics/src/main/resources/com/sun/glass/ui/monocle/
-    fi
+    wget --quiet --output-document="$sha"-src.tar.gz http://hg.openjdk.java.net/openjfx/"$jdk"-dev/rt/archive/"$sha".tar.gz/modules/javafx.graphics/src/main/java/com/sun/glass/ui/monocle/
+    wget --quiet --output-document="$sha"-res.tar.gz http://hg.openjdk.java.net/openjfx/"$jdk"-dev/rt/archive/"$sha".tar.gz/modules/javafx.graphics/src/main/resources/com/sun/glass/ui/monocle/
     tar -xf "$sha"-src.tar.gz --strip-components 3
     rm "$sha"-src.tar.gz
     tar -xf "$sha"-res.tar.gz --strip-components 3
@@ -77,8 +65,23 @@ submit_pr() {
 hub='hub'
 pup='pup'
 
+# Checks if a program is in the user's PATH, and is executable.
+check_executable() {
+  local=${2:-false}
+  if local; then
+    if [[ "$(command -v "${1}")" ]]; then
+      true
+    elif [[ "$(command -v .sync/$1)" ]]; then
+      eval "$1"="'./.sync/$1'"
+      true
+    fi
+  else
+    test -x "$(command -v "${1}")"
+  fi
+}
+
 install_prereqs() {
-  if ! check_executable hub; then
+  if ! check_executable hub true; then
     echo "Downloading hub (command-line Github tool)"
     wget --quiet --output-document=hub.tgz https://github.com/github/hub/releases/download/v2.3.0-pre8/hub-linux-amd64-2.3.0-pre8.tgz
     if [[ $(sha256sum hub.tgz | head -c 64) != "9332c78b6a2ee66767836452019b9eafc048cf65871c0c5d2a0fa51ce3a90142" ]]; then
@@ -94,7 +97,7 @@ install_prereqs() {
     hub='./.sync/hub'
   fi
 
-  if ! check_executable pup; then
+  if ! check_executable pup true; then
     echo "Downloading pup (command-line HTML parser)"
     wget --quiet --output-document=pup.zip https://github.com/ericchiang/pup/releases/download/v0.4.0/pup_v0.4.0_linux_amd64.zip
     if [[ $(sha256sum pup.zip | head -c 64) != "ec3d29e9fb375b87ac492c8b546ad6be84b0c0b49dab7ff4c6b582eac71ba01c" ]]; then
@@ -112,7 +115,6 @@ install_prereqs() {
 fetch_highest_builds() {
   tag_url=$1
   start_hash=$2
-  jdk=$3
   raw_tags=$(curl -s "${tag_url}" | ${pup} '.tagEntry text{}' | sed "/$start_hash/q" | xargs echo -n)
 
   read -a raw <<< "$raw_tags"
@@ -128,14 +130,17 @@ fetch_highest_builds() {
 
   for key in "${!tags[@]}"
   do
-    version=$(echo "$key" | cut -f1 -d-)
-    build=$(echo "$key" | cut -f2 -d-)
+    # Version is in form "12.x.y+z" so:
+    # Get first two numbers for JDK major version
+    version=${key:0:2}
+    # Get numbers after + character for build
+    build=$(echo "$key" | cut -f2 -d+)
     if [[ -z "${highest_builds[${version}]}" ]]; then
       # Have not yet seen a build for this version, so add this one
       highest_builds[$version]=$build
     else
       # We have seen a build for this version, see if this one is higher
-      if [ "${build:1}" -gt "${highest_builds[$version]:1}" ]; then
+      if [ "${build}" -gt "${highest_builds[$version]}" ]; then
         highest_builds[$version]=$build
       fi
     fi
@@ -145,9 +150,9 @@ fetch_highest_builds() {
   for monocle_tag in "${monocle_tags[@]}"
   do
     if [[ $monocle_tag =~ "-" ]]; then
-      version=$(echo "$monocle_tag" | cut -f1 -d-)
-      build=$(echo "$monocle_tag" | cut -f2 -d-)
-      if [[ ! -z "${highest_builds[${version}]}" ]]; then
+      version=${monocle_tag:0:2}
+      build=$(echo "$monocle_tag" | cut -f2 -d+)
+      if [[ -n "${highest_builds[${version}]}" ]]; then
         if [ "${highest_builds[${version}]}" == "$build" ]; then
           # We can skip this version, as the highest build is already a tag
           # in the upstream monocle repository.
@@ -155,7 +160,7 @@ fetch_highest_builds() {
         else
           # There is a newer build available
           printf "The latest build for version %s is %s in upstream, but there is a newer build %s\\n" "$version" "$build" "${highest_builds[${version}]}"
-          submit_pr "$version" "${highest_builds[${version}]}" "${tags["$version"-"${highest_builds[$version]}"]}" "$hub" "$jdk"
+          submit_pr "$version" "${highest_builds[${version}]}" "${tags["$version"-"${highest_builds[$version]}"]}" "$hub" "$version"
           highest_builds[${version}]=''
         fi
       fi
@@ -163,8 +168,8 @@ fetch_highest_builds() {
   done
   for key in "${!highest_builds[@]}"
   do
-    if [[ ! -z "${highest_builds[$key]}" ]]; then
-      submit_pr "$key" "${highest_builds[${key}]}" "${tags["$key"-"${highest_builds[$key]}"]}" "$hub" "$jdk"
+    if [[ -n "${highest_builds[$key]}" ]]; then
+      submit_pr "$key" "${highest_builds[${key}]}" "${tags["$key"-"${highest_builds[$key]}"]}" "$hub" 
     fi
   done
 }
@@ -175,5 +180,20 @@ require_executable wget
 require_executable unzip
 install_prereqs
 
-# fetch_highest_builds "http://hg.openjdk.java.net/openjfx/8u-dev/rt/tags" "3a7f004c4995" "8"
-fetch_highest_builds "http://hg.openjdk.java.net/openjfx/9-dev/rt/tags" "dc2bda380efe" "9"
+jdk=11
+temp=11
+while : ; do
+  response=$(curl --write-out %{http_code} --silent --output /dev/null http://hg.openjdk.java.net/openjfx/${temp}-dev/rt/tags)
+
+  if [[ "$response" -ne 404 ]] ; then
+    jdk=$temp
+  else
+    break
+  fi
+  temp=$((temp + 1))
+done
+
+printf "The current highest major version of Java is %s\\n" "$jdk"
+# Highest JDK is now $jdk
+fetch_highest_builds "http://hg.openjdk.java.net/openjfx/${jdk}-dev/rt/tags" "284d06bb1364"
+
