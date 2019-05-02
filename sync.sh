@@ -37,7 +37,8 @@ submit_pr() {
   build=$2
   sha=$3
   hub=$4
-  read -p "Would you like to open a PR for ${version}-${build}? " -n 1 -r
+  branch_name="${version}${separator}${build}"
+  read -p "Would you like to open a PR for ${branch_name}? " -n 1 -r
   echo
   if [[ $REPLY =~ ^[Yy]$ ]]; then
     wget --quiet --output-document="$sha"-src.tar.gz http://hg.openjdk.java.net/openjfx/"$version"-dev/rt/archive/"$sha".tar.gz/modules/javafx.graphics/src/main/java/com/sun/glass/ui/monocle/
@@ -52,20 +53,20 @@ submit_pr() {
       printf "You can add the upstream TestFX repository with 'git remote add upstream https://github.com/testfx/monocle\\n"
       exit
     fi
-    printf "Opening PR to %s for %s\\n" "$remote" "$version"-"$build"
+    printf "Opening PR to %s for %s\\n" "$remote" "$branch_name"
     printf "Summary of changes:\\n"
     git --no-pager diff --stat
     git fetch "$remote" master
-    git checkout -b "$version"-"$build" "$remote"/master
+    git checkout -b "$branch_name" "$remote"/master
     git add -A
     git reset -- .sync
-    commit_msg="Update Monocle to ${version}-${build} (${sha})."
+    commit_msg="Update Monocle to ${branch_name} (${sha})."
     git commit -m "$commit_msg"
-    git push origin "$version"-"$build"
-    "${hub}" pull-request -m "$version"-"$build"
+    git push origin "$branch_name"
+    "${hub}" pull-request -m "$branch_name"
     git checkout master
   else
-    echo "Skipping ${version}-${build}."
+    echo "Skipping ${branch_name}."
   fi
 }
 
