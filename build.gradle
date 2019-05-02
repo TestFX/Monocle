@@ -11,11 +11,10 @@ buildscript {
 // print welcome message.
 apply from: rootProject.file("gradle/welcome.gradle")
 
-// task to add gradle wrapper files.
-task("wrapper", type: Wrapper, group: "build setup") {
-    gradleVersion = "4.10.2"
+wrapper {
+    gradleVersion = '5.4.1'
     distributionUrl = "https://services.gradle.org/distributions/" +
-            "gradle-${gradleVersion}-bin.zip"
+        "gradle-${gradleVersion}-bin.zip"
 }
 
 // task to print gradle and groovy versions.
