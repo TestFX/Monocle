@@ -79,9 +79,11 @@ check_executable() {
   if local; then
     if [[ "$(command -v "${1}")" ]]; then
       true
-    elif [[ "$(command -v .sync/$1)" ]]; then
+    elif [[ "$(command -v .sync/"$1")" ]]; then
       eval "$1"="'./.sync/$1'"
       true
+    else
+      false
     fi
   else
     test -x "$(command -v "${1}")"
@@ -91,8 +93,10 @@ check_executable() {
 install_prereqs() {
   if ! check_executable hub true; then
     echo "Downloading hub (command-line Github tool)"
-    wget --quiet --output-document=hub.tgz https://github.com/github/hub/releases/download/v2.3.0-pre8/hub-linux-amd64-2.3.0-pre8.tgz
-    if [[ $(sha256sum hub.tgz | head -c 64) != "9332c78b6a2ee66767836452019b9eafc048cf65871c0c5d2a0fa51ce3a90142" ]]; then
+    hub_ver="2.11.2"
+    hub_sha="7e7a57f5323d3d7d9637cad8ea8f584d7db67e040201d6d88275910f8e235a80"
+    wget --quiet --output-document=hub.tgz https://github.com/github/hub/releases/download/v${hub_ver}/hub-linux-amd64-${hub_ver}.tgz
+    if [[ $(sha256sum hub.tgz | head -c 64) != "${hub_sha}" ]]; then
       echo "${red}✘ Error (integrity): hub release download had bad checksum${reset}" >&2
       exit
     fi
