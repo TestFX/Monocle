@@ -1,12 +1,18 @@
 buildscript {
     repositories {
         jcenter()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
 
     dependencies {
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4"
+        classpath 'org.openjfx:javafx-plugin:0.0.7'
     }
 }
+
+apply plugin: 'org.openjfx.javafxplugin'
 
 // print welcome message.
 apply from: rootProject.file("gradle/welcome.gradle")
@@ -37,22 +43,6 @@ task("initSourceDirs", group: "build setup").doLast {
     for (sourceDir in sourceDirs) { sourceDir.mkdirs() }
 }
 
-ext.openjfxVersion = '11-ea+25'
-
-static def getOSName() {
-    final String osName = System.getProperty("os.name").toLowerCase()
-    if (osName.contains("linux")) {
-        return ("linux")
-    } else if (osName.contains("mac os x") || osName.contains("darwin") || osName.contains("osx")) {
-        return ("mac")
-    } else if (osName.contains("windows")) {
-        return ("win")
-    }
-    return ""
-}
-
-ext.platform = getOSName()
-
 // provide java tasks.
 apply plugin: "java"
 
@@ -60,15 +50,14 @@ repositories {
     jcenter()
 }
 
-dependencies {
-    compile "org.openjfx:javafx-base:${openjfxVersion}:${platform}"
-    compile "org.openjfx:javafx-controls:${openjfxVersion}:${platform}"
-    compile "org.openjfx:javafx-graphics:${openjfxVersion}:${platform}"
+javafx {
+    modules = [ 'javafx.controls', 'javafx.graphics' ]
+    version = '12.0.1'
 }
 
 // java language level.
-sourceCompatibility = "10"
-targetCompatibility = "10"
+sourceCompatibility = "12"
+targetCompatibility = "12"
 
 // configure publish tasks.
 apply from: rootProject.file("gradle/publish-bintray.gradle")

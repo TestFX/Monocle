@@ -34,8 +34,12 @@ publishing {
                 artifact sourceJar
                 artifact javadocJar
                 pom.withXml {
-                    asNode().children().last() + pomConfig
+                    asNode().dependencies.'*'
+                            .findAll() { it.groupId.text() == 'org.openjfx' }
+                            .each { it.remove(it.classifier) }
                     asNode().appendNode("description", pomConfig.description)
+                    asNode().children().last() + pomConfig
+
                 }
             }
         }
