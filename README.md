@@ -81,6 +81,90 @@ the Windows Subsystem for Linux) and macOS. Improvements to it are very welcome!
 
 [13]: https://github.com/github/hub
 
+## Issuing a Release
+
+After you have either manually or automatically updated to the latest Monocle version
+you can issue a release by doing the following:
+
+### Upgraded Monocle Version is First Build (YY) for New Major Java Version (XX)
+
+* Add the gradle dependency info to `README.md` under `Gradle` header:
+
+```gradle
+testCompile "org.testfx:openjfx-monocle:jdk-XX+YY" // For Java XX
+testCompile "org.testfx:openjfx-monocle:jdk-11+26" // For Java 11
+testCompile "org.testfx:openjfx-monocle:jdk-9+181" // For Java 9
+testCompile "org.testfx:openjfx-monocle:8u76-b04" // For Java 8
+```
+
+* Change the Maven dependency info in `README.md` under the `Maven` header:
+
+```pom
+<dependency>
+    <groupId>org.testfx</groupId>
+    <artifactId>openjfx-monocle</artifactId>
+    <version>jdk-XX+YY</version> <!-- jdk-11+26 for Java 11, jdk-9+181 for Java 9, 8u76-b04 for Java 8 -->
+    <scope>test</scope>
+</dependency>
+```
+
+* Bump the project version in `gradle.properties` to the new version:
+
+```
+group = org.testfx
+version = jdk-XX+YY
+```
+
+
+### Upgraded Monocle Version is New (Not First) Build (YY) for Existing Major Java Version (XX)
+
+Assume XX is `12`, then:
+
+* Change the gradle dependency info to `README.md` under `Gradle` header:
+
+```gradle
+testCompile "org.testfx:openjfx-monocle:jdk-12+YY" // For Java 12
+testCompile "org.testfx:openjfx-monocle:jdk-9+181" // For Java 9
+testCompile "org.testfx:openjfx-monocle:8u76-b04" // For Java 8
+```
+
+* Change the Maven dependency info in `README.md` under the `Maven` header:
+
+```pom
+<dependency>
+    <groupId>org.testfx</groupId>
+    <artifactId>openjfx-monocle</artifactId>
+    <version>jdk-12+YY</version> <!-- jdk-9+181 for Java 9, 8u76-b04 for Java 8 -->
+    <scope>test</scope>
+</dependency>
+```
+* Bump the project version in `gradle.properties` to the new version:
+
+```
+group = org.testfx
+version = jdk-12+YY
+```
+
+### Make the Release
+
+* Commit the above changes with the commit message `(release) Monocle jdk-XX+YY.` to upstream
+(either by creating a PR or pushing the commit directly).
+
+* Tag the new commit (note the `v` prefix character so that the branch name does not conflict
+with the tag name):
+
+`git tag -a vXX+YY`
+
+* Push the tag to upstream:
+
+`git push upstream vXX+YY`
+
+* Run gradle-bintray-plugin:
+
+```powershell
+gradlew bintray -PbintrayUsername=${BINTRAY_USERNAME} -PbintrayApiKey=${BINTRAY_API_KEY} -Dorg.gradle.java.home="%ProgramFiles%\Java\XX.YY"
+```
+
 ## License
 
 OpenJDK and OpenJFX are licensed under the [GNU General Public License, version 2, with the
