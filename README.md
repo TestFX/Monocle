@@ -14,7 +14,7 @@ low-level access.
 ## Gradle
 
 ```gradle
-testCompile "org.testfx:openjfx-monocle:jdk-12+14" // For Java 12
+testCompile "org.testfx:openjfx-monocle:jdk-12.0.1+2" // For Java 12
 testCompile "org.testfx:openjfx-monocle:jdk-11+26" // For Java 11
 testCompile "org.testfx:openjfx-monocle:jdk-9+181" // For Java 9
 testCompile "org.testfx:openjfx-monocle:8u76-b04" // For Java 8
@@ -26,7 +26,7 @@ testCompile "org.testfx:openjfx-monocle:8u76-b04" // For Java 8
 <dependency>
     <groupId>org.testfx</groupId>
     <artifactId>openjfx-monocle</artifactId>
-    <version>jdk-12+14</version> <!-- jdk-11+26 for Java 11, jdk-9+181 for Java 9, 8u76-b04 for Java 8 -->
+    <version>jdk-12.0.1+2</version> <!-- jdk-11+26 for Java 11, jdk-9+181 for Java 9, 8u76-b04 for Java 8 -->
     <scope>test</scope>
 </dependency>
 ```

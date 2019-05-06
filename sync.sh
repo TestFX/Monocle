@@ -45,6 +45,7 @@ submit_pr() {
     wget --quiet --output-document="$sha"-src.tar.gz http://hg.openjdk.java.net/openjfx/"$major_version"-dev/rt/archive/"$sha".tar.gz/modules/javafx.graphics/src/main/java/com/sun/glass/ui/monocle/
     wget --quiet --output-document="$sha"-res.tar.gz http://hg.openjdk.java.net/openjfx/"$major_version"-dev/rt/archive/"$sha".tar.gz/modules/javafx.graphics/src/main/resources/com/sun/glass/ui/monocle/
     tar -xf "$sha"-src.tar.gz --strip-components 3
+    # TODO if tar fails because the URL is bad, use better error handling
     rm "$sha"-src.tar.gz
     tar -xf "$sha"-res.tar.gz --strip-components 3
     rm "$sha"-res.tar.gz
@@ -63,6 +64,7 @@ submit_pr() {
     git reset -- .sync
     commit_msg="Update Monocle to ${branch_name} (${sha})."
     git commit -m "$commit_msg"
+    # TODO if this would be an empty commit, let the user know and present options
     git push origin "$branch_name"
     "${hub}" pull-request -m "$branch_name"
     git checkout master
