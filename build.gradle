@@ -56,8 +56,8 @@ javafx {
 }
 
 // java language level.
-sourceCompatibility = "12"
-targetCompatibility = "12"
+sourceCompatibility = "9"
+targetCompatibility = "9"
 
 // configure publish tasks.
 apply from: rootProject.file("gradle/publish-bintray.gradle")
@@ -88,14 +88,6 @@ artifacts {
 }
 
 compileJava {
-    options.compilerArgs += [
-            "--add-exports", "javafx.graphics/com.sun.glass.ui=ALL-UNNAMED",
-            "--add-exports", "javafx.graphics/com.sun.glass.events=ALL-UNNAMED",
-            "--add-exports", "javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED",
-            "--add-exports", "javafx.graphics/com.sun.glass.utils=ALL-UNNAMED",
-            "--add-exports", "javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED"
-    ]
-
     javadoc {
         options.addStringOption("Xdoclint:none", "-quiet")
         options.addMultilineStringsOption('-add-exports').setValue(['javafx.graphics/com.sun.glass.ui=ALL-UNNAMED',

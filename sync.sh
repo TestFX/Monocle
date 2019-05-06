@@ -76,7 +76,7 @@ pup='pup'
 # Checks if a program is in the user's PATH, and is executable.
 check_executable() {
   local=${2:-false}
-  if local; then
+  if [ "$local" = true ]; then
     if [[ "$(command -v "${1}")" ]]; then
       true
     elif [[ "$(command -v .sync/"$1")" ]]; then
@@ -124,6 +124,22 @@ install_prereqs() {
   fi
 }
 
+# https://stackoverflow.com/questions/4023830/how-to-compare-two-strings-in-dot-separated-version-format-in-bash
+vercmp() {
+    version1=$1 version2=$2 condition=$3
+    IFS=. v1_array=($version1) v2_array=($version2)
+    v1=$((v1_array[0] * 100 + v1_array[1] * 10 + v1_array[2]))
+    v2=$((v2_array[0] * 100 + v2_array[1] * 10 + v2_array[2]))
+    diff=$((v2 - v1))
+    [[ $condition = '='  ]] && ((diff == 0)) && return 0
+    [[ $condition = '!=' ]] && ((diff != 0)) && return 0
+    [[ $condition = '<'  ]] && ((diff >  0)) && return 0
+    [[ $condition = '<=' ]] && ((diff >= 0)) && return 0
+    [[ $condition = '>'  ]] && ((diff <  0)) && return 0
+    [[ $condition = '>=' ]] && ((diff <= 0)) && return 0
+    return 1
+}
+
 fetch_highest_builds() {
   tag_url=$1
   start_hash=$2
@@ -138,49 +154,51 @@ fetch_highest_builds() {
   done
 
   declare -A highest_builds
+  declare -A highest_version_for_major
 
   for key in "${!tags[@]}"
   do
     # Version is in form "12.x.y+z" so:
-    # Get first two numbers for JDK major version
-    version=${key:0:2}
-    # Get numbers after + character for build
-    build=$(echo "$key" | cut -f2 -d$separator)
-    if [[ -z "${highest_builds[${version}]}" ]]; then
-      # Have not yet seen a build for this version, so add this one
-      highest_builds[$version]=$build
-    else
-      # We have seen a build for this version, see if this one is higher
-      if [ "${build}" -gt "${highest_builds[$version]}" ]; then
-        highest_builds[$version]=$build
-      fi
+    major_version=${key:0:2}
+    full_version=$(echo $key | cut -f1 -d$separator)
+    if [[ -z "${highest_version_for_major[${major_version}]}" ]]; then
+      # Have not yet seen a full version for this major version, so add this one
+      highest_version_for_major[$major_version]=$full_version
+    elif [[ $(vercmp $full_version "${highest_version_for_major[${major_version}]}" '>') -eq 0 ]]; then
+      # We have already seen a full version for this major version but the current one is newer, so replace old value
+      highest_version_for_major[$major_version]=$full_version
     fi
+
+    for major_ver in "${!highest_version_for_major[@]}"
+    do
+      if [[ $key =~ ^$highest_version_for_major[$major_ver] ]]; then
+        # This is a build for the highest full version for this major version
+        # Get numbers after + character for build
+        build=$(echo "$key" | cut -f2 -d$separator)
+        if [[ -z "${highest_builds[${full_version}]}" ]]; then
+          # Have not yet seen a build for this version, so add this one
+          highest_builds[$major_version]=$build
+        elif [ "${build}" -gt "${highest_builds[$full_version]}" ]; then
+          # We have already seen a build for this version but the current one is higher, so replace old value
+          highest_builds[$major_version]=$build
+        fi
+      fi
+    done
   done
 
   read -a monocle_tags <<<"$(git tag -l | xargs echo -n)"
-  for monocle_tag in "${monocle_tags[@]}"
+  for major_version in "${!highest_builds[@]}"
   do
-    if [[ $monocle_tag =~ "-" ]]; then
-      version=${monocle_tag:0:2}
-      build=$(echo "$monocle_tag" | cut -f2 -d$separator)
-      if [[ -n "${highest_builds[${version}]}" ]]; then
-        if [ "${highest_builds[${version}]}" == "$build" ]; then
-          # We can skip this version, as the highest build is already a tag
-          # in the upstream monocle repository.
-          printf "Version %s already has the highest build %s\\n" "$version" "$build"
-        else
-          # There is a newer build available
-          printf "The latest build for version %s is %s in upstream, but there is a newer build %s\\n" "$version" "$build" "${highest_builds[${version}]}"
-          submit_pr "$version" "${highest_builds[${version}]}" "${tags["$version""$separator""${highest_builds[$version]}"]}" "$hub" "$version"
-          highest_builds[${version}]=''
+    highest_ver="${highest_version_for_major[${major_version}]}"
+    if [[ -n "${highest_builds[$major_version]}" ]]; then
+      for monocle_tag in "${monocle_tags[@]}"
+      do
+        if [[ $monocle_tag =~ ^v?$highest_version_for_major[$major_ver]$separator${highest_builds[${major_version}]}]$ ]]; then
+          # Skip this one as it is already in upstream.
+          continue
         fi
-      fi
-  fi
-  done
-  for key in "${!highest_builds[@]}"
-  do
-    if [[ -n "${highest_builds[$key]}" ]]; then
-      submit_pr "$key" "${highest_builds[${key}]}" "${tags["$key""$separator""${highest_builds[$key]}"]}" "$hub" 
+      done
+      submit_pr "$highest_ver" "${highest_builds[${major_version}]}" "${tags["$highest_ver""$separator""${highest_builds[$major_version]}"]}" "$hub"
     fi
   done
 }
@@ -204,7 +222,5 @@ while : ; do
   temp=$((temp + 1))
 done
 
-printf "The current highest major version of Java is %s\\n" "$jdk"
 # Highest JDK is now $jdk
 fetch_highest_builds "http://hg.openjdk.java.net/openjfx/${jdk}-dev/rt/tags" "284d06bb1364"
-
