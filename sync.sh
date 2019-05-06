@@ -41,8 +41,9 @@ submit_pr() {
   read -p "Would you like to open a PR for ${branch_name}? " -n 1 -r
   echo
   if [[ $REPLY =~ ^[Yy]$ ]]; then
-    wget --quiet --output-document="$sha"-src.tar.gz http://hg.openjdk.java.net/openjfx/"$version"-dev/rt/archive/"$sha".tar.gz/modules/javafx.graphics/src/main/java/com/sun/glass/ui/monocle/
-    wget --quiet --output-document="$sha"-res.tar.gz http://hg.openjdk.java.net/openjfx/"$version"-dev/rt/archive/"$sha".tar.gz/modules/javafx.graphics/src/main/resources/com/sun/glass/ui/monocle/
+    major_version=${version:0:2}
+    wget --quiet --output-document="$sha"-src.tar.gz http://hg.openjdk.java.net/openjfx/"$major_version"-dev/rt/archive/"$sha".tar.gz/modules/javafx.graphics/src/main/java/com/sun/glass/ui/monocle/
+    wget --quiet --output-document="$sha"-res.tar.gz http://hg.openjdk.java.net/openjfx/"$major_version"-dev/rt/archive/"$sha".tar.gz/modules/javafx.graphics/src/main/resources/com/sun/glass/ui/monocle/
     tar -xf "$sha"-src.tar.gz --strip-components 3
     rm "$sha"-src.tar.gz
     tar -xf "$sha"-res.tar.gz --strip-components 3
