@@ -105,7 +105,9 @@ class MouseInput {
                 MonocleView oldView = (MonocleView) oldWindow.getView();
                 if (oldView != null) {
                     // send exit event
-                    int modifiers = state.getModifiers(); // TODO: include key modifiers
+                	    KeyState keyState = new KeyState();
+                		KeyInput.getInstance().getState(keyState);
+                    int modifiers = state.getModifiers() | keyState.getModifiers();
                     int button = state.getButton();
                     boolean isPopupTrigger = false; // TODO
                     int oldX = state.getX();
@@ -145,7 +147,9 @@ class MouseInput {
         int relY = y - window.getY();
         // send enter event
         if (oldWindow != window && view != null) {
-            int modifiers = state.getModifiers(); // TODO: include key modifiers
+        		KeyState keyState = new KeyState();
+        		KeyInput.getInstance().getState(keyState);
+        		int modifiers = state.getModifiers() | keyState.getModifiers();
             int button = state.getButton();
             boolean isPopupTrigger = false; // TODO
             postMouseEvent(view, MouseEvent.ENTER, button,
@@ -154,11 +158,13 @@ class MouseInput {
         }
         // send motion events
         if (oldWindow != window | newAbsoluteLocation) {
-            boolean isDrag = !state.getButtonsPressed().isEmpty();
-            int eventType = isDrag ? MouseEvent.DRAG : MouseEvent.MOVE;
-            int modifiers = state.getModifiers(); // TODO: include key modifiers
-            int button = state.getButton();
-            boolean isPopupTrigger = false; // TODO
+			boolean isDrag = !state.getButtonsPressed().isEmpty();
+			int eventType = isDrag ? MouseEvent.DRAG : MouseEvent.MOVE;
+			KeyState keyState = new KeyState();
+			KeyInput.getInstance().getState(keyState);
+			int modifiers = state.getModifiers() | keyState.getModifiers();
+			int button = state.getButton();
+			boolean isPopupTrigger = false; // TODO
             postMouseEvent(view, eventType, button,
                            relX, relY, x, y,
                            modifiers, isPopupTrigger, synthesized);
@@ -174,9 +180,12 @@ class MouseInput {
                 pressState.pressButton(button);
                 // send press event
                 boolean isPopupTrigger = false; // TODO
+                KeyState keyState = new KeyState();
+    				KeyInput.getInstance().getState(keyState);
+    				int modifiers = pressState.getModifiers() | keyState.getModifiers();
                 postMouseEvent(view, MouseEvent.DOWN, button,
                                relX, relY, x, y,
-                               pressState.getModifiers(), isPopupTrigger,
+                               modifiers, isPopupTrigger,
                                synthesized);
             }
         }
@@ -192,9 +201,12 @@ class MouseInput {
                 releaseState.releaseButton(button);
                 // send release event
                 boolean isPopupTrigger = false; // TODO
+                KeyState keyState = new KeyState();
+				KeyInput.getInstance().getState(keyState);
+				int modifiers = releaseState.getModifiers() | keyState.getModifiers();
                 postMouseEvent(view, MouseEvent.UP, button,
                                relX, relY, x, y,
-                               releaseState.getModifiers(), isPopupTrigger,
+                               modifiers, isPopupTrigger,
                                synthesized);
             }
         }
@@ -208,7 +220,9 @@ class MouseInput {
                 default: dY = 0.0; break;
             }
             if (dY != 0.0) {
-                int modifiers = newState.getModifiers();
+                KeyState keyState = new KeyState();
+				KeyInput.getInstance().getState(keyState);
+			    int modifiers = newState.getModifiers() | keyState.getModifiers();
                 RunnableProcessor.runLater(() -> {
                     view.notifyScroll(relX, relY, x, y, 0.0, dY,
                                       modifiers, 1, 0, 0, 0, 1.0, 1.0);
