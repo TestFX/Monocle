@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -22,26 +22,29 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-
 package com.sun.glass.ui.monocle;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
+public class EGLPlatformFactory extends NativePlatformFactory {
 
-public class LinuxArch {
-
-    @SuppressWarnings("removal")
-    private static final int bits = AccessController.doPrivileged((PrivilegedAction<Integer>) () -> {
-        LinuxSystem system = LinuxSystem.getLinuxSystem();
-        return (int) system.sysconf(LinuxSystem._SC_LONG_BIT);
-    });;
-
-    static boolean is64Bit() {
-        return bits == 64;
+    @Override
+    protected boolean matches() {
+        return true;
     }
 
-    static int getBits() {
-        return bits;
+    @Override
+    protected int getMajorVersion() {
+        return 1;
     }
+
+    @Override
+    protected int getMinorVersion() {
+        return 0;
+    }
+
+    @Override
+    protected NativePlatform createNativePlatform() {
+        return new EGLPlatform();
+    }
+
 
 }

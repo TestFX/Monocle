@@ -47,17 +47,17 @@ task("initSourceDirs", group: "build setup").doLast {
 apply plugin: "java"
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 javafx {
     modules = [ 'javafx.controls', 'javafx.graphics' ]
-    version = '12.0.1'
+    version = '17-ea+15'
 }
 
 // java language level.
-sourceCompatibility = "9"
-targetCompatibility = "9"
+sourceCompatibility = "16"
+targetCompatibility = "16"
 
 // configure publish tasks.
 apply from: rootProject.file("gradle/publish-bintray.gradle")

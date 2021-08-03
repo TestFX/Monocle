@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,30 +25,53 @@
 
 package com.sun.glass.ui.monocle;
 
-/** LinuxPlatform matches any Linux system */
-class LinuxPlatform extends NativePlatform {
+import com.sun.glass.ui.Size;
 
-    LinuxPlatform() {
-        LinuxSystem.getLinuxSystem().loadLibrary();
+class EGLCursor extends NativeCursor {
+
+    private static final int CURSOR_WIDTH = 16;
+    private static final int CURSOR_HEIGHT = 16;
+
+
+    private native void _initEGLCursor(int cursorWidth, int cursorHeight);
+    private native void _setVisible(boolean visible);
+    private native void _setLocation(int x, int y);
+    private native void _setImage(byte[] cursorImage);
+
+    EGLCursor() {
+        _initEGLCursor(CURSOR_WIDTH, CURSOR_HEIGHT);
     }
 
     @Override
-    protected InputDeviceRegistry createInputDeviceRegistry() {
-        return new LinuxInputDeviceRegistry(false);
+    Size getBestSize() {
+        return new Size(CURSOR_WIDTH, CURSOR_HEIGHT);
     }
 
     @Override
-    protected NativeCursor createCursor() {
-        final NativeCursor c = useCursor ? new SoftwareCursor() : new NullCursor();
-        return logSelectedCursor(c);
+    void setVisibility(boolean visibility) {
+        isVisible = visibility;
+        _setVisible(visibility);
+    }
+
+    private void updateImage(boolean always) {
+        System.out.println("EGLCursor.updateImage: not implemented");
     }
 
     @Override
-    protected NativeScreen createScreen() {
-        try {
-            return new FBDevScreen();
-        } catch (RuntimeException e) {
-            return new HeadlessScreen();
-        }
+    void setImage(byte[] cursorImage) {
+        _setImage(cursorImage);
+    }
+
+    @Override
+    void setLocation(int x, int y) {
+        _setLocation(x, y);
+    }
+
+    @Override
+    void setHotSpot(int hotspotX, int hotspotY) {
+    }
+
+    @Override
+    void shutdown() {
     }
 }
