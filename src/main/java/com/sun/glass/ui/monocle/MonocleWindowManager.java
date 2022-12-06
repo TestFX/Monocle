@@ -111,7 +111,7 @@ final class MonocleWindowManager {
         final Window windowOwner = window.getOwner();
         if (windowOwner != null) {
             requestFocus((MonocleWindow) windowOwner);
-        } else {
+        } else if (window == focusedWindow) {
             focusedWindow = null;
         }
         
