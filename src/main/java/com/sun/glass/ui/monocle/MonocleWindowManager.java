@@ -27,6 +27,7 @@ package com.sun.glass.ui.monocle;
 
 import com.sun.glass.events.WindowEvent;
 import com.sun.glass.ui.Screen;
+import com.sun.glass.ui.Window;
 import com.sun.javafx.tk.Toolkit;
 
 
@@ -106,9 +107,14 @@ final class MonocleWindowManager {
         for (int i = 0; i < windowsToNotify.size(); i++) {
             windowsToNotify.get(i).notifyClose();
         }
+        
+        final Window windowOwner = window.getOwner();
+        if (windowOwner != null) {
+            requestFocus((MonocleWindow) windowOwner);
+        }
+        
         window.notifyDestroy();
         return true;
-
     }
 
     boolean minimizeWindow(MonocleWindow window) {
