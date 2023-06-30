@@ -19,7 +19,6 @@ wrapper {
 // task to print gradle and groovy versions.
 task("versions", group: "help").doLast {
     println "Java version: ${System.properties["java.version"]}"
-    println "JavaFX version: ${System.properties["javafx.version"]}"
     println "Gradle version: ${gradle.gradleVersion}"
     println "Groovy version: ${GroovySystem.version}"
 }
