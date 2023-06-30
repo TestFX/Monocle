@@ -5,14 +5,7 @@ buildscript {
             url "https://plugins.gradle.org/m2/"
         }
     }
-
-//    dependencies {
-//        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4"
-//        classpath 'org.openjfx:javafx-plugin:0.0.7'
-//    }
 }
-
-//apply plugin: 'org.openjfx.javafxplugin'
 
 // print welcome message.
 apply from: rootProject.file("gradle/welcome.gradle")
@@ -51,17 +44,9 @@ repositories {
     mavenCentral()
 }
 
-//javafx {
-//    modules = [ 'javafx.controls', 'javafx.graphics' ]
-//    version = '12.0.1'
-//}
-
 // java language level.
 sourceCompatibility = "8"
 targetCompatibility = "8"
-
-// configure publish tasks.
-//apply from: rootProject.file("gradle/publish-bintray.gradle")
 
 // task to create jar with source code.
 task("sourceJar", type: Jar) {
@@ -91,11 +76,6 @@ artifacts {
 compileJava {
     javadoc {
         options.addStringOption("Xdoclint:none", "-quiet")
-//        options.addMultilineStringsOption('-add-exports').setValue(['javafx.graphics/com.sun.glass.ui=ALL-UNNAMED',
-//        'javafx.graphics/com.sun.glass.events=ALL-UNNAMED',
-//        'javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED',
-//        'javafx.graphics/com.sun.glass.utils=ALL-UNNAMED',
-//        'javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED',])
     }
 }
 
