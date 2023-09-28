@@ -21,14 +21,14 @@ task createPom {
 		pom {
 			project {
 				name "${project.pomName}"
-				description "${project.pomDescription}"
-				inceptionYear '2013'
-				url "http://testfx.org/"
+				description "${project.description}"
+				inceptionYear "${project.inceptionYear}"
+				url "https://openjfx.io/"
 
 				licenses {
 					license([:]) {
-						name "European Union Public Licence, Version 1.1"
-						url "http://ec.europa.eu/idabc/eupl.html"
+						name "The GNU General Public License (GPL), Version 2, June 1991"
+						url "https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html"
 						distribution "repo"
 					}
 				}
@@ -37,58 +37,6 @@ task createPom {
 					url "https://github.com/TestFX/TestFX"
 				}
 
-				developers {
-					developer {
-						id "mvsoder"
-						name "Mark Soderquist"
-						url "https://github.com/mvsoder"
-						timezone "-7"
-						roles {
-							role "developer"
-						}
-					}
-
-					developer {
-						id "svenruppert"
-						name "Sven Ruppert"
-						url "https://github.com/svenruppert"
-						timezone "+1"
-						roles {
-							role "developer"
-						}
-					}
-
-					developer {
-						id "minisu"
-						name "Henrik Olsson"
-						url "https://github.com/minisu"
-						timezone "+1"
-						roles {
-							role "former developer"
-						}
-					}
-
-					developer {
-						id "dainnilsson"
-						name "Dain Nilsson"
-						url "https://github.com/dainnilsson"
-						timezone "+1"
-						roles {
-							role "project founder"
-							role "former developer"
-						}
-					}
-
-					developer {
-						id "hastebrot"
-						name "Benjamin Gudehus"
-						url "https://github.com/hastebrot"
-						timezone "+1"
-						roles {
-							role "project maintainer"
-						}
-					}
-				}
 			}
 		}.writeTo("$buildDir/libs/${project.name}-${project.version}.pom")
 	}
