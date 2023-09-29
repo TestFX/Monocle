@@ -7,8 +7,7 @@
 //    }
 //}
 
-apply plugin: "java"
-apply plugin: 'maven'
+apply plugin: 'java'
 
 // print welcome message.
 //apply from: rootProject.file("gradle/welcome.gradle")
@@ -71,8 +70,8 @@ sourceCompatibility = "11"
 targetCompatibility = "11"
 
 dependencies {
-    implementation "org.openjfx:javafx-base:11.0.2:${platform}"
-    implementation "org.openjfx:javafx-graphics:11.0.2:${platform}"
+    compileOnly "org.openjfx:javafx-base:11.0.2:${platform}"
+    compileOnly "org.openjfx:javafx-graphics:11.0.2:${platform}"
 }
 
 // configure publish tasks.

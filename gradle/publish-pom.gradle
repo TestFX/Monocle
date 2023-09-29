@@ -15,6 +15,8 @@
  * specific language governing permissions and limitations under the Licence.
  */
 
+apply plugin: 'maven'
+
 task createPom {
 	description 'Generate the artifact pom file for Maven Central'
 	doLast {
@@ -46,12 +48,6 @@ task createPom {
 					dependency {
 						groupId "org.openjfx"
 						artifactId "javafx-base"
-						version "${project.pomDependencyVersion}"
-						scope "provided"
-					}
-					dependency {
-						groupId "org.openjfx"
-						artifactId "javafx-controls"
 						version "${project.pomDependencyVersion}"
 						scope "provided"
 					}
