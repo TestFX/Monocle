@@ -22,21 +22,46 @@ task createPom {
 			project {
 				name "${project.pomName}"
 				description "${project.description}"
-				inceptionYear "${project.inceptionYear}"
 				url "https://openjfx.io/"
 
 				licenses {
 					license([:]) {
-						name "The GNU General Public License (GPL), Version 2, June 1991"
-						url "https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html"
+						name "GNU General Public License, version 2, with the Classpath Exception"
+						url "https://github.com/TestFX/Monocle/blob/main/LICENSE"
 						distribution "repo"
 					}
 				}
 
 				scm {
-					url "https://github.com/TestFX/TestFX"
+					url "https://github.com/TestFX/Monocle"
 				}
 
+				developers {
+					developer {
+						name "The OpenJDK Community"
+					}
+				}
+
+				dependencies {
+					dependency {
+						groupId "org.openjfx"
+						artifactId "javafx-base"
+						version "${project.pomDependencyVersion}"
+						scope "runtime"
+					}
+					dependency {
+						groupId "org.openjfx"
+						artifactId "javafx-controls"
+						version "${project.pomDependencyVersion}"
+						scope "runtime"
+					}
+					dependency {
+						groupId "org.openjfx"
+						artifactId "javafx-graphics"
+						version "${project.pomDependencyVersion}"
+						scope "runtime"
+					}
+				}
 			}
 		}.writeTo("$buildDir/libs/${project.name}-${project.version}.pom")
 	}
