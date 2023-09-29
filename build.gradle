@@ -7,11 +7,13 @@ buildscript {
     }
 }
 
+apply plugin: 'maven'
+
 // print welcome message.
 apply from: rootProject.file("gradle/welcome.gradle")
 
 wrapper {
-    gradleVersion = '5.4.1'
+    gradleVersion = '6.5.1'
     distributionUrl = "https://services.gradle.org/distributions/" +
         "gradle-${gradleVersion}-bin.zip"
 }
@@ -47,6 +49,9 @@ repositories {
 sourceCompatibility = "8"
 targetCompatibility = "8"
 
+// configure publish tasks.
+apply from: rootProject.file("gradle/publish-pom.gradle")
+
 // task to create jar with source code.
 task("sourceJar", type: Jar) {
     group "Build"
@@ -63,6 +68,7 @@ task("javadocJar", type: Jar) {
     from javadoc
 }
 
+jar.finalizedBy createPom
 jar.finalizedBy sourceJar
 jar.finalizedBy javadocJar
 
@@ -70,6 +76,7 @@ artifacts {
     archives jar
     archives sourceJar
     archives javadocJar
+    createPom
 }
 
 compileJava {
