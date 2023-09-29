@@ -47,19 +47,19 @@ task createPom {
 						groupId "org.openjfx"
 						artifactId "javafx-base"
 						version "${project.pomDependencyVersion}"
-						scope "runtime"
+						scope "provided"
 					}
 					dependency {
 						groupId "org.openjfx"
 						artifactId "javafx-controls"
 						version "${project.pomDependencyVersion}"
-						scope "runtime"
+						scope "provided"
 					}
 					dependency {
 						groupId "org.openjfx"
 						artifactId "javafx-graphics"
 						version "${project.pomDependencyVersion}"
-						scope "runtime"
+						scope "provided"
 					}
 				}
 			}
