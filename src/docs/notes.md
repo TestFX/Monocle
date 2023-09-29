@@ -8,6 +8,12 @@ separate locations for Java 8 and Java 11+.
 
 ### Java 11+ Monocle Code
 
+Source code for Monocle 11+ can be found in several places. 
+
+#### Maven
+https://repo1.maven.org/maven2/org/openjfx/javafx-graphics
+
+#### GitHub
 The following table links the Git branch for each LTS release. It is more 
 appropriate to use the tag for a specific release, but these links will help 
 you get started.

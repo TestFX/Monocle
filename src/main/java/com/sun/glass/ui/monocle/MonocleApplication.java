@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2015, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2018, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -28,8 +28,8 @@ import com.sun.glass.ui.Application;
 import com.sun.glass.ui.CommonDialogs.ExtensionFilter;
 import com.sun.glass.ui.CommonDialogs.FileChooserResult;
 import com.sun.glass.ui.Cursor;
+import com.sun.glass.ui.GlassRobot;
 import com.sun.glass.ui.Pixels;
-import com.sun.glass.ui.Robot;
 import com.sun.glass.ui.Screen;
 import com.sun.glass.ui.Size;
 import com.sun.glass.ui.Timer;
@@ -38,7 +38,6 @@ import com.sun.glass.ui.Window;
 import javafx.collections.SetChangeListener;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.security.AccessController;
@@ -198,8 +197,9 @@ public final class MonocleApplication extends Application {
 
     @Override
     public Pixels createPixels(int width, int height, IntBuffer data,
-                               float scale) {
-        return new MonoclePixels(width, height, data, scale);
+                               float scalex, float scaley)
+    {
+        return new MonoclePixels(width, height, data, scalex, scaley);
     }
 
     @Override
@@ -208,7 +208,7 @@ public final class MonocleApplication extends Application {
     }
 
     @Override
-    public Robot createRobot() {
+    public GlassRobot createRobot() {
         return new MonocleRobot();
     }
 
@@ -219,49 +219,20 @@ public final class MonocleApplication extends Application {
 
     @Override
     protected Screen[] staticScreen_getScreens() {
-        Screen screen = null;
-        try {
-            NativeScreen ns = platform.getScreen();
-            Constructor c = AccessController.doPrivileged(
-                    new PrivilegedAction<Constructor>() {
-                        @Override
-                        public Constructor run() {
-                            try {
-                                Constructor c = Screen.class.getDeclaredConstructor(
-                                        Long.TYPE,
-                                        Integer.TYPE,
-                                        Integer.TYPE, Integer.TYPE,
-                                        Integer.TYPE, Integer.TYPE,
-                                        Integer.TYPE, Integer.TYPE,
-                                        Integer.TYPE, Integer.TYPE,
-                                        Integer.TYPE, Integer.TYPE, Float.TYPE);
-                                c.setAccessible(true);
-                                return c;
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                return null;
-                            }
-                        }
-                    });
-            if (c != null) {
-                screen = (Screen) c.newInstance(
-                        1l, // dummy native pointer;
-                        ns.getDepth(),
-                        0, 0, ns.getWidth(), ns.getHeight(),
-                        0, 0, ns.getWidth(), ns.getHeight(),
-                        ns.getDPI(), ns.getDPI(),
-                        ns.getScale());
-                // Move the cursor to the middle of the screen
-                MouseState mouseState = new MouseState();
-                mouseState.setX(ns.getWidth() / 2);
-                mouseState.setY(ns.getHeight() / 2);
-                MouseInput.getInstance().setState(mouseState, false);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } catch (UnsatisfiedLinkError e) {
-            e.printStackTrace();
-        }
+        NativeScreen ns = platform.getScreen();
+        Screen screen = new Screen(1l, // dummy native pointer;
+                                   ns.getDepth(),
+                                   0, 0, ns.getWidth(), ns.getHeight(),
+                                   0, 0, ns.getWidth(), ns.getHeight(),
+                                   0, 0, ns.getWidth(), ns.getHeight(),
+                                   ns.getDPI(), ns.getDPI(),
+                                   ns.getScale(), ns.getScale(),
+                                   ns.getScale(), ns.getScale());
+        // Move the cursor to the middle of the screen
+        MouseState mouseState = new MouseState();
+        mouseState.setX(ns.getWidth() / 2);
+        mouseState.setY(ns.getHeight() / 2);
+        MouseInput.getInstance().setState(mouseState, false);
         return new Screen[] { screen };
     }
 
