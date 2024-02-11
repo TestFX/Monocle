@@ -1,5 +1,5 @@
 ---
-name: TestFX 4 CI
+name: Monocle CI
 
 on:
   workflow_dispatch:
@@ -34,6 +34,6 @@ jobs:
     uses: ./.github/workflows/build.yml
     with:
       os: ubuntu-22.04
-      jdk: 17.0.10
-      openjfx: 17
+      jdk: 21.0.2
+      openjfx: 21
     secrets: inherit

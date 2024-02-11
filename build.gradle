@@ -69,12 +69,12 @@ ext {
 }
 
 // java language level.
-sourceCompatibility = "17"
-targetCompatibility = "17"
+sourceCompatibility = "21"
+targetCompatibility = "21"
 
 dependencies {
-    implementation "org.openjfx:javafx-base:17.0.10:${platform}"
-    implementation "org.openjfx:javafx-graphics:17.0.10:${platform}"
+    implementation "org.openjfx:javafx-base:21.0.2:${platform}"
+    implementation "org.openjfx:javafx-graphics:21.0.2:${platform}"
 }
 
 // configure publish tasks.
@@ -82,17 +82,17 @@ apply from: rootProject.file("gradle/publish-pom.gradle")
 
 // task to create jar with source code.
 task("sourceJar", type: Jar) {
-    group "Build"
-    description "An archive of the source code"
-    classifier "sources"
+    group = "Build"
+    description = "An archive of the source code"
+    archiveClassifier = "sources"
     from sourceSets.main.allJava
 }
 
 // task to create jar with javadocs.
 task("javadocJar", type: Jar) {
-    group "Build"
-    description "An archive of the javadoc"
-    classifier "javadoc"
+    group = "Build"
+    description = "An archive of the javadoc"
+    archiveClassifier = "javadoc"
     from javadoc
 }
 
