@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -22,20 +22,13 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-
 package com.sun.glass.ui.monocle;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-
-class LinuxPlatformFactory extends NativePlatformFactory {
+public class EGLPlatformFactory extends NativePlatformFactory {
 
     @Override
     protected boolean matches() {
-        @SuppressWarnings("removal")
-        String os = AccessController.doPrivileged(
-                (PrivilegedAction<String>) () -> System.getProperty("os.name"));
-        return os != null && os.equals("Linux");
+        return true;
     }
 
     @Override
@@ -50,6 +43,8 @@ class LinuxPlatformFactory extends NativePlatformFactory {
 
     @Override
     protected NativePlatform createNativePlatform() {
-        return new LinuxPlatform();
+        return new EGLPlatform();
     }
+
+
 }
