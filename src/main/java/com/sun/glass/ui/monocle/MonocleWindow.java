@@ -55,10 +55,6 @@ final class MonocleWindow extends Window {
         super(owner, screen, styleMask);
     }
 
-    MonocleWindow(long parent) {
-        super(parent);
-    }
-
     @Override
     protected void _toFront(long ptr) {
         MonocleWindowManager.getInstance().toFront(this);
@@ -168,11 +164,6 @@ final class MonocleWindow extends Window {
     }
 
     @Override
-    protected long _createChildWindow(long parent) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     protected boolean _close(long nativeWindowPointer) {
         return MonocleWindowManager.getInstance().closeWindow(this);
     }
@@ -187,6 +178,10 @@ final class MonocleWindow extends Window {
         }
         return result;
     }
+
+    // empty - not needed by this implementation
+    @Override
+    protected void _updateViewSize(long ptr) {}
 
     /**
      * Returns the handle used to create a rendering context in Prism
@@ -443,13 +438,6 @@ final class MonocleWindow extends Window {
 
     @Override protected void _setCursor(long ptr, Cursor cursor) {
         ((MonocleCursor) cursor).applyCursor();
-    }
-
-    @Override protected int _getEmbeddedX(long ptr) {
-        return 0;
-    }
-    @Override protected int _getEmbeddedY(long ptr) {
-        return 0;
     }
 
     @Override

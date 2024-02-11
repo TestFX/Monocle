@@ -1,66 +1,84 @@
-buildscript {
-    repositories {
-        jcenter()
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
+//buildscript {
+//    repositories {
+//        mavenCentral()
+//        maven {
+//            url "https://plugins.gradle.org/m2/"
+//        }
+//    }
+//}
 
-    dependencies {
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4"
-        classpath 'org.openjfx:javafx-plugin:0.0.7'
-    }
+plugins {
+    id "java"
+    id "maven-publish"
 }
-
-apply plugin: 'org.openjfx.javafxplugin'
 
 // print welcome message.
-apply from: rootProject.file("gradle/welcome.gradle")
-
-wrapper {
-    gradleVersion = '5.4.1'
-    distributionUrl = "https://services.gradle.org/distributions/" +
-        "gradle-${gradleVersion}-bin.zip"
-}
-
-// task to print gradle and groovy versions.
-task("versions", group: "help").doLast {
-    println "Java version: ${System.properties["java.version"]}"
-    println "Gradle version: ${gradle.gradleVersion}"
-    println "Groovy version: ${GroovySystem.version}"
-}
-
-// task to create main and test source directories.
-task("initSourceDirs", group: "build setup").doLast {
-    // ignore source directories for projects without source sets.
-    if (!project.hasProperty("sourceSets")) { return }
-
-    // list all source directories.
-    def sourceSets = project.sourceSets as SourceSetContainer
-    def sourceDirs = sourceSets*.allSource.srcDirs.flatten() as List<File>
-
-    // create source directories, for those who not exists.
-    for (sourceDir in sourceDirs) { sourceDir.mkdirs() }
-}
-
-// provide java tasks.
-apply plugin: "java"
+//apply from: rootProject.file("gradle/welcome.gradle")
+//
+//wrapper {
+//    gradleVersion = '6.5.1'
+//    distributionUrl = "https://services.gradle.org/distributions/" +
+//        "gradle-${gradleVersion}-bin.zip"
+//}
+//
+//// task to print gradle and groovy versions.
+//task("versions", group: "help").doLast {
+//    println "Java version: ${System.properties["java.version"]}"
+//    println "Gradle version: ${gradle.gradleVersion}"
+//    println "Groovy version: ${GroovySystem.version}"
+//}
+//
+//// task to create main and test source directories.
+//task("initSourceDirs", group: "build setup").doLast {
+//    // ignore source directories for projects without source sets.
+//    if (!project.hasProperty("sourceSets")) { return }
+//
+//    // list all source directories.
+//    def sourceSets = project.sourceSets as SourceSetContainer
+//    def sourceDirs = sourceSets*.allSource.srcDirs.flatten() as List<File>
+//
+//    // create source directories, for those who not exists.
+//    for (sourceDir in sourceDirs) { sourceDir.mkdirs() }
+//}
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
-javafx {
-    modules = [ 'javafx.controls', 'javafx.graphics' ]
-    version = '12.0.1'
+static def getOSName() {
+    final String osName = System.getProperty("os.name").toLowerCase()
+    if (osName.contains("linux")) {
+        return ("linux")
+    } else if (osName.contains("mac os x") || osName.contains("darwin") || osName.contains("osx")) {
+        return ("mac")
+    } else if (osName.contains("windows")) {
+        return ("win")
+    }
+    return ""
+}
+
+ext {
+    def buildTimeAndDate = new Date()
+    buildDate = buildTimeAndDate.format("yyyy-MM-dd")
+    buildTime = buildTimeAndDate.format("HH:mm:ss.SSSZ")
+
+    javaVersion = System.properties["java.version"]
+    javaVendor = System.properties["java.vendor"]
+    javaVmVersion = System.properties["java.vm.version"]
+    platform = getOSName()
 }
 
 // java language level.
-sourceCompatibility = "9"
-targetCompatibility = "9"
+sourceCompatibility = "17"
+targetCompatibility = "17"
+
+dependencies {
+    implementation "org.openjfx:javafx-base:17.0.10:${platform}"
+    implementation "org.openjfx:javafx-graphics:17.0.10:${platform}"
+}
 
 // configure publish tasks.
-apply from: rootProject.file("gradle/publish-bintray.gradle")
+apply from: rootProject.file("gradle/publish-pom.gradle")
 
 // task to create jar with source code.
 task("sourceJar", type: Jar) {
@@ -78,6 +96,7 @@ task("javadocJar", type: Jar) {
     from javadoc
 }
 
+jar.finalizedBy generatePomFileForMavenPublication
 jar.finalizedBy sourceJar
 jar.finalizedBy javadocJar
 
@@ -85,27 +104,13 @@ artifacts {
     archives jar
     archives sourceJar
     archives javadocJar
+    generatePomFileForMavenPublication
 }
 
 compileJava {
     javadoc {
         options.addStringOption("Xdoclint:none", "-quiet")
-        options.addMultilineStringsOption('-add-exports').setValue(['javafx.graphics/com.sun.glass.ui=ALL-UNNAMED',
-        'javafx.graphics/com.sun.glass.events=ALL-UNNAMED',
-        'javafx.graphics/com.sun.glass.ui.delegate=ALL-UNNAMED',
-        'javafx.graphics/com.sun.glass.utils=ALL-UNNAMED',
-        'javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED',])
     }
-}
-
-ext {
-    def buildTimeAndDate = new Date()
-    buildDate = buildTimeAndDate.format("yyyy-MM-dd")
-    buildTime = buildTimeAndDate.format("HH:mm:ss.SSSZ")
-
-    javaVersion = System.properties["java.version"]
-    javaVendor = System.properties["java.vendor"]
-    javaVmVersion = System.properties["java.vm.version"]
 }
 
 jar {
