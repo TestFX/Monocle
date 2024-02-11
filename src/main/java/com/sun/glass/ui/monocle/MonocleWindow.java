@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -112,7 +112,7 @@ final class MonocleWindow extends Window {
         if (h > 0) {
             //window height surpass window content height(ch)
             height = h;
-        } else if (ch > 0) {
+        } else if (cw > 0) {
             //content height changed
             height = ch;
         } else {
