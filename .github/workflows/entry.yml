@@ -34,6 +34,6 @@ jobs:
     uses: ./.github/workflows/build.yml
     with:
       os: ubuntu-22.04
-      jdk: 11
-      openjfx: 11
+      jdk: 11.0.2
+      openjfx: 11.0.2
     secrets: inherit
