@@ -15,50 +15,58 @@
  * specific language governing permissions and limitations under the Licence.
  */
 
-apply plugin: 'maven'
-
-task createPom {
-	description 'Generate the artifact pom file for Maven Central'
-	doLast {
-		pom {
-			project {
-				name "${project.pomName}"
-				description "${project.description}"
-				url "https://openjfx.io/"
+publishing {
+    publications {
+        maven(MavenPublication) {
+			pom {
+				name = "${project.pomName}"
+				description = "${project.description}"
+				url = "https://openjfx.io/"
 
 				licenses {
-					license([:]) {
-						name "GNU General Public License, version 2, with the Classpath Exception"
-						url "https://github.com/TestFX/Monocle/blob/main/LICENSE"
-						distribution "repo"
+					license {
+						name = "GNU General Public License, version 2, with the Classpath Exception"
+						url = "https://github.com/TestFX/Monocle/blob/main/LICENSE"
+						distribution = "repo"
 					}
 				}
 
 				scm {
-					url "https://github.com/TestFX/Monocle"
+					url = "https://github.com/TestFX/Monocle"
 				}
 
 				developers {
 					developer {
-						name "The OpenJDK Community"
+						name = "The OpenJDK Community"
 					}
 				}
 
-				dependencies {
-					dependency {
-						groupId "org.openjfx"
-						artifactId "javafx-base"
-						version "${project.pomDependencyVersion}"
-						scope "provided"
-					}
-					dependency {
-						groupId "org.openjfx"
-						artifactId "javafx-graphics"
-						version "${project.pomDependencyVersion}"
-						scope "provided"
-					}
-				}
+				withXml {
+      				asNode().appendNode('dependencies')
+						.appendNode('dependency')
+							.appendNode('groupId', 'org.openjfx')
+						.parent()
+							.appendNode('artifactId', 'javafx-base')
+						.parent()
+							.appendNode('version', "${project.pomDependencyVersion}")
+						.parent()
+							.appendNode('scope', 'provided')
+						.parent()
+					.parent()
+						.appendNode('dependency')
+							.appendNode('groupId', 'org.openjfx')
+						.parent()
+							.appendNode('artifactId', 'javafx-graphics')
+						.parent()
+							.appendNode('version', "${project.pomDependencyVersion}")
+						.parent()
+							.appendNode('scope', 'provided')
+      			}
 			}
-		}.writeTo("$buildDir/libs/${project.name}-${project.version}.pom")
-	}
+        }
+    }
+}
+
+tasks.named("generatePomFileForMavenPublication") {
+	destination = "$buildDir/libs/${project.name}-${project.version}.pom"
 }

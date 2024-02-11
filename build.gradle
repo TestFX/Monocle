@@ -7,7 +7,10 @@
 //    }
 //}
 
-apply plugin: 'java'
+plugins {
+    id "java"
+    id "maven-publish"
+}
 
 // print welcome message.
 //apply from: rootProject.file("gradle/welcome.gradle")
@@ -66,12 +69,12 @@ ext {
 }
 
 // java language level.
-sourceCompatibility = "11"
-targetCompatibility = "11"
+sourceCompatibility = "17"
+targetCompatibility = "17"
 
 dependencies {
-    compileOnly "org.openjfx:javafx-base:11.0.2:${platform}"
-    compileOnly "org.openjfx:javafx-graphics:11.0.2:${platform}"
+    implementation "org.openjfx:javafx-base:17.0.10:${platform}"
+    implementation "org.openjfx:javafx-graphics:17.0.10:${platform}"
 }
 
 // configure publish tasks.
@@ -93,7 +96,7 @@ task("javadocJar", type: Jar) {
     from javadoc
 }
 
-jar.finalizedBy createPom
+jar.finalizedBy generatePomFileForMavenPublication
 jar.finalizedBy sourceJar
 jar.finalizedBy javadocJar
 
@@ -101,7 +104,7 @@ artifacts {
     archives jar
     archives sourceJar
     archives javadocJar
-    createPom
+    generatePomFileForMavenPublication
 }
 
 compileJava {
