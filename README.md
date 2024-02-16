@@ -1,5 +1,12 @@
 # OpenJFX Monocle
 
+### NOTE
+This is not the official OpenJFX Monocle repository. This repository is used to build
+Monocle for use with TestFX. The official OpenJFX Monocle repository is located at
+https://github.com/openjdk/jfx.
+
+## Summary
+
 **Monocle** is the implementation of the Glass windowing component of JavaFX for embedded systems
 [\[1\]][1]. It is part of the Java Platform since version 8u20 (released in August 2014), but not
 included in builds for desktop platforms (Windows, Linux, Mac) [\[2\]][2].
@@ -14,10 +21,10 @@ low-level access.
 ## Gradle
 
 ```gradle
-testCompile "org.testfx:openjfx-monocle:jdk-12.0.1+2" // For Java 12
-testCompile "org.testfx:openjfx-monocle:jdk-11+26" // For Java 11
-testCompile "org.testfx:openjfx-monocle:jdk-9+181" // For Java 9
-testCompile "org.testfx:openjfx-monocle:8u76-b04" // For Java 8
+testCompile 'org.testfx:openjfx-monocle:21.0.2' // For OpenJFX 21
+testCompile 'org.testfx:openjfx-monocle:17.0.10' // For OpenJFX 17
+testCompile 'org.testfx:openjfx-monocle:11.0.2' // For OpenJFX 11
+testCompile 'org.testfx:openjfx-monocle:jdk-8.0.372' // For Java 8
 ```
 
 ## Maven
@@ -26,19 +33,27 @@ testCompile "org.testfx:openjfx-monocle:8u76-b04" // For Java 8
 <dependency>
     <groupId>org.testfx</groupId>
     <artifactId>openjfx-monocle</artifactId>
-    <version>jdk-12.0.1+2</version> <!-- jdk-11+26 for Java 11, jdk-9+181 for Java 9, 8u76-b04 for Java 8 -->
+    <version>21.0.2</version> <!-- 17.0.10 For OpenJFX 17, 11.0.2 For OpenJFX 11, jdk-8.0.372 for Java 8 -->
     <scope>test</scope>
 </dependency>
 ```
 
 ## Build (under Windows)
 
-Clone the repository and checkout the tag.
+There are branches for each of the LTS releases of OpenJFX. Currently, we are 
+supporting four branches, until the support for each LTS release ends.
+
+- **jdk-21:** OpenJFX 21
+- **jdk-17:** OpenJFX 17
+- **jdk-11:** OpenJFX 11
+- **jdk-8:** OpenJFX 8u-dev
+
+To build Monocle for a specific JDK version, clone the repository and checkout the tag.
 
 ```
 C:\> git clone https://github.com/TestFX/Monocle
 C:\> cd Monocle
-C:\> git checkout 8u20-b26
+C:\> git checkout jdk-21
 ```
 
 Choose the JDK version and build the jars.
@@ -49,25 +64,12 @@ C:\> gradlew clean jar
 C:\> dir build\libs
 ```
 
-## Manual Update
+## Updating Monocle
 
 To update the build to newer versions of Monocle just copy source code files from
 [src/main/java/com/sun/glass/ui/monocle][10] into the directory `src/main/java` and resource files
 from [src/main/resources/com/sun/glass/ui/monocle][11] into the directory `src/main/resources`. Use
 the links `bz2`, `zip` or `gz` to export the files as archive.
-
-You can update to a certain version by changing `tip` in the URLs to a changeset hash. There is a
-list of changeset hashes at [openjfx/8u-dev/rt/tags][12].
-
-Example changeset hashes:
-
-- **8u20-b26:** `e56a8bbcba20` instead of `tip`.
-- **8u40-b27:** `e00e97499831` instead of `tip`.
-- **8u60-b27:** `cff3afdde691` instead of `tip`.
-
-[10]: http://hg.openjdk.java.net/openjfx/8u-dev/rt/file/tip/modules/graphics/src/main/java/com/sun/glass/ui/monocle
-[11]: http://hg.openjdk.java.net/openjfx/8u-dev/rt/file/tip/modules/graphics/src/main/resources/com/sun/glass/ui/monocle
-[12]: http://hg.openjdk.java.net/openjfx/8u-dev/rt/tags
 
 ## Automatic Update (beta)
 
@@ -92,10 +94,11 @@ you can issue a release by doing the following:
 * Add the gradle dependency info to `README.md` under `Gradle` header:
 
 ```gradle
-testCompile "org.testfx:openjfx-monocle:jdk-XX+YY" // For Java XX
-testCompile "org.testfx:openjfx-monocle:jdk-11+26" // For Java 11
-testCompile "org.testfx:openjfx-monocle:jdk-9+181" // For Java 9
-testCompile "org.testfx:openjfx-monocle:8u76-b04" // For Java 8
+testCompile "org.testfx:openjfx-monocle:[openjdk.version]" // For OpenJFX XX
+testCompile 'org.testfx:openjfx-monocle:21.0.2' // For OpenJFX 21
+testCompile 'org.testfx:openjfx-monocle:17.0.10' // For OpenJFX 17
+testCompile 'org.testfx:openjfx-monocle:11.0.2' // For OpenJFX 11
+testCompile 'org.testfx:openjfx-monocle:jdk-8.0.372' // For Java 8
 ```
 
 * Change the Maven dependency info in `README.md` under the `Maven` header:
@@ -104,7 +107,7 @@ testCompile "org.testfx:openjfx-monocle:8u76-b04" // For Java 8
 <dependency>
     <groupId>org.testfx</groupId>
     <artifactId>openjfx-monocle</artifactId>
-    <version>jdk-XX+YY</version> <!-- jdk-11+26 for Java 11, jdk-9+181 for Java 9, 8u76-b04 for Java 8 -->
+    <version>[openjdk.version]</version> <!-- 17.0.10 For OpenJFX 17, 11.0.2 For OpenJFX 11, jdk-8.0.372 for Java 8 -->
     <scope>test</scope>
 </dependency>
 ```
@@ -113,58 +116,23 @@ testCompile "org.testfx:openjfx-monocle:8u76-b04" // For Java 8
 
 ```
 group = org.testfx
-version = jdk-XX+YY
+version = [openjdk.version]
 ```
 
-
-### Upgraded Monocle Version is New (Not First) Build (YY) for Existing Major Java Version (XX)
-
-Assume XX is `12`, then:
-
-* Change the gradle dependency info to `README.md` under `Gradle` header:
-
-```gradle
-testCompile "org.testfx:openjfx-monocle:jdk-12+YY" // For Java 12
-testCompile "org.testfx:openjfx-monocle:jdk-9+181" // For Java 9
-testCompile "org.testfx:openjfx-monocle:8u76-b04" // For Java 8
-```
-
-* Change the Maven dependency info in `README.md` under the `Maven` header:
-
-```pom
-<dependency>
-    <groupId>org.testfx</groupId>
-    <artifactId>openjfx-monocle</artifactId>
-    <version>jdk-12+YY</version> <!-- jdk-9+181 for Java 9, 8u76-b04 for Java 8 -->
-    <scope>test</scope>
-</dependency>
-```
-* Bump the project version in `gradle.properties` to the new version:
-
-```
-group = org.testfx
-version = jdk-12+YY
-```
 
 ### Make the Release
 
-* Commit the above changes with the commit message `(release) Monocle jdk-XX+YY.` to upstream
+* Commit the above changes with the commit message `(release) Monocle [openjdk.version].` to upstream
 (either by creating a PR or pushing the commit directly).
 
 * Tag the new commit (note the `v` prefix character so that the branch name does not conflict
 with the tag name):
 
-`git tag -a vXX+YY`
+`git tag -a v[openjdk.version]`
 
 * Push the tag to upstream:
 
-`git push upstream vXX+YY`
-
-* Run gradle-bintray-plugin:
-
-```powershell
-gradlew bintray -PbintrayUsername=${BINTRAY_USERNAME} -PbintrayApiKey=${BINTRAY_API_KEY} -Dorg.gradle.java.home="%ProgramFiles%\Java\XX.YY"
-```
+`git push upstream v[openjdk.version]`
 
 ## License
 
