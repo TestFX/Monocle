@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2021, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -22,30 +22,29 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-
 package com.sun.glass.ui.monocle;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-
-class DispmanAcceleratedScreen extends AcceleratedScreen {
-
-    DispmanAcceleratedScreen(int[] attributes) throws GLException {
-        super(attributes);
-    }
-
-    private native long _platformGetNativeWindow(int displayID, int layerID);
+public class EGLPlatformFactory extends NativePlatformFactory {
 
     @Override
-    protected long platformGetNativeWindow() {
-        @SuppressWarnings("removal")
-        int displayID = AccessController.doPrivileged(
-                (PrivilegedAction<Integer>)
-                        () -> Integer.getInteger("dispman.display", 0 /* LCD */));
-        @SuppressWarnings("removal")
-        int layerID = AccessController.doPrivileged(
-                (PrivilegedAction<Integer>)
-                        () -> Integer.getInteger("dispman.layer", 1));
-        return _platformGetNativeWindow(displayID, layerID);
+    protected boolean matches() {
+        return true;
     }
+
+    @Override
+    protected int getMajorVersion() {
+        return 1;
+    }
+
+    @Override
+    protected int getMinorVersion() {
+        return 0;
+    }
+
+    @Override
+    protected NativePlatform createNativePlatform() {
+        return new EGLPlatform();
+    }
+
+
 }

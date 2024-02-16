@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2021, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -22,30 +22,32 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-
 package com.sun.glass.ui.monocle;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
+/**
+ * A native platform for a Linux system with an electrophoretic display, also
+ * called an e-paper display.
+ */
+class EPDPlatform extends LinuxPlatform {
 
-class DispmanAcceleratedScreen extends AcceleratedScreen {
-
-    DispmanAcceleratedScreen(int[] attributes) throws GLException {
-        super(attributes);
+    /**
+     * Creates a new Monocle EPD Platform.
+     */
+    EPDPlatform() {
+        EPDSystem.getEPDSystem().loadLibrary();
     }
 
-    private native long _platformGetNativeWindow(int displayID, int layerID);
+    @Override
+    protected InputDeviceRegistry createInputDeviceRegistry() {
+        return new EPDInputDeviceRegistry(false);
+    }
 
     @Override
-    protected long platformGetNativeWindow() {
-        @SuppressWarnings("removal")
-        int displayID = AccessController.doPrivileged(
-                (PrivilegedAction<Integer>)
-                        () -> Integer.getInteger("dispman.display", 0 /* LCD */));
-        @SuppressWarnings("removal")
-        int layerID = AccessController.doPrivileged(
-                (PrivilegedAction<Integer>)
-                        () -> Integer.getInteger("dispman.layer", 1));
-        return _platformGetNativeWindow(displayID, layerID);
+    protected NativeScreen createScreen() {
+        try {
+            return new EPDScreen();
+        } catch (RuntimeException e) {
+            return new HeadlessScreen();
+        }
     }
 }

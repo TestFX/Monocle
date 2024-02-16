@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2021, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,27 +25,53 @@
 
 package com.sun.glass.ui.monocle;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
+import com.sun.glass.ui.Size;
 
-class DispmanAcceleratedScreen extends AcceleratedScreen {
+class EGLCursor extends NativeCursor {
 
-    DispmanAcceleratedScreen(int[] attributes) throws GLException {
-        super(attributes);
+    private static final int CURSOR_WIDTH = 16;
+    private static final int CURSOR_HEIGHT = 16;
+
+
+    private native void _initEGLCursor(int cursorWidth, int cursorHeight);
+    private native void _setVisible(boolean visible);
+    private native void _setLocation(int x, int y);
+    private native void _setImage(byte[] cursorImage);
+
+    EGLCursor() {
+        _initEGLCursor(CURSOR_WIDTH, CURSOR_HEIGHT);
     }
 
-    private native long _platformGetNativeWindow(int displayID, int layerID);
+    @Override
+    Size getBestSize() {
+        return new Size(CURSOR_WIDTH, CURSOR_HEIGHT);
+    }
 
     @Override
-    protected long platformGetNativeWindow() {
-        @SuppressWarnings("removal")
-        int displayID = AccessController.doPrivileged(
-                (PrivilegedAction<Integer>)
-                        () -> Integer.getInteger("dispman.display", 0 /* LCD */));
-        @SuppressWarnings("removal")
-        int layerID = AccessController.doPrivileged(
-                (PrivilegedAction<Integer>)
-                        () -> Integer.getInteger("dispman.layer", 1));
-        return _platformGetNativeWindow(displayID, layerID);
+    void setVisibility(boolean visibility) {
+        isVisible = visibility;
+        _setVisible(visibility);
+    }
+
+    private void updateImage(boolean always) {
+        System.out.println("EGLCursor.updateImage: not implemented");
+    }
+
+    @Override
+    void setImage(byte[] cursorImage) {
+        _setImage(cursorImage);
+    }
+
+    @Override
+    void setLocation(int x, int y) {
+        _setLocation(x, y);
+    }
+
+    @Override
+    void setHotSpot(int hotspotX, int hotspotY) {
+    }
+
+    @Override
+    void shutdown() {
     }
 }

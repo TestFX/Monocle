@@ -1,0 +1,72 @@
+/*
+ * Copyright 2013-2014 SmartBear Software
+ * Copyright 2014-2023 The TestFX Contributors
+ *
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved by the
+ * European Commission - subsequent versions of the EUPL (the "Licence"); You may
+ * not use this work except in compliance with the Licence.
+ *
+ * You may obtain a copy of the Licence at:
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the Licence is distributed on an "AS IS" basis, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the Licence for the
+ * specific language governing permissions and limitations under the Licence.
+ */
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+			pom {
+				name = "${project.pomName}"
+				description = "${project.description}"
+				url = "https://openjfx.io/"
+
+				licenses {
+					license {
+						name = "GNU General Public License, version 2, with the Classpath Exception"
+						url = "https://github.com/TestFX/Monocle/blob/main/LICENSE"
+						distribution = "repo"
+					}
+				}
+
+				scm {
+					url = "https://github.com/TestFX/Monocle"
+				}
+
+				developers {
+					developer {
+						name = "The OpenJDK Community"
+					}
+				}
+
+				withXml {
+      				asNode().appendNode('dependencies')
+						.appendNode('dependency')
+							.appendNode('groupId', 'org.openjfx')
+						.parent()
+							.appendNode('artifactId', 'javafx-base')
+						.parent()
+							.appendNode('version', "${project.pomDependencyVersion}")
+						.parent()
+							.appendNode('scope', 'provided')
+						.parent()
+					.parent()
+						.appendNode('dependency')
+							.appendNode('groupId', 'org.openjfx')
+						.parent()
+							.appendNode('artifactId', 'javafx-graphics')
+						.parent()
+							.appendNode('version', "${project.pomDependencyVersion}")
+						.parent()
+							.appendNode('scope', 'provided')
+      			}
+			}
+        }
+    }
+}
+
+tasks.named("generatePomFileForMavenPublication") {
+	destination = "$buildDir/libs/${project.name}-${project.version}.pom"
+}

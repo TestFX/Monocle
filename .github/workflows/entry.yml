@@ -1,14 +1,10 @@
 ---
-name: TestFX 4 CI
+name: Monocle CI
 
 on:
   workflow_dispatch:
   pull_request:
-    branches:
-      - 'master'
   push:
-    branches:
-      - 'master'
 
 permissions:
   actions: read
@@ -34,6 +30,6 @@ jobs:
     uses: ./.github/workflows/build.yml
     with:
       os: ubuntu-22.04
-      jdk: 11
-      openjfx: 11
+      jdk: 21.0.2
+      openjfx: 21
     secrets: inherit
