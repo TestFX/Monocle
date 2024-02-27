@@ -1,6 +1,6 @@
 # Monocle Source
 
-It is often difficult to rememeber where to find the Monocle source code in 
+It is often difficult to remember where to find the Monocle source code in 
 order to build it. This document notes where to find the Monocle source code
 for Java LTS versions.
 
