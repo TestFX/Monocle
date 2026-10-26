@@ -89,6 +89,16 @@ class Framebuffer {
     void composePixels(Buffer src,
                               int pX, int pY, int pW, int pH,
                               float alpha) {
+        // Composition clips and advances its view. The producer reuses the
+        // caller's buffer, so its position, limit, mark and byte order must
+        // survive the upload unchanged.
+        if (src instanceof ByteBuffer) {
+            ByteBuffer bytes = (ByteBuffer) src;
+            src = bytes.duplicate().order(bytes.order());
+        } else {
+            src = ((IntBuffer) src).duplicate();
+        }
+        src.rewind();
         int stride = pW * 4;
         int start = 0;
         if (pX < 0) {
@@ -156,15 +166,17 @@ class Framebuffer {
                 }
             }
         } else {
-            if (pW == width) {
+            // A clipped source can cover the destination width while retaining
+            // a larger source stride. Such rows must be copied separately.
+            if (pW == width && stride == pW * 4) {
                 if (src instanceof ByteBuffer) {
                     src.position(start);
-                    src.limit(stride * pH);
+                    src.limit(start + stride * pH);
                     bb.put((ByteBuffer) src);
                 } else {
                     IntBuffer srcPixels = (IntBuffer) src;
                     srcPixels.position(start >> 2);
-                    srcPixels.limit((stride * pH) >> 2);
+                    srcPixels.limit((start + stride * pH) >> 2);
                     bb.asIntBuffer().put(srcPixels);
                 }
             } else {

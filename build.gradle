@@ -77,6 +77,13 @@ dependencies {
     implementation "org.openjfx:javafx-graphics:21.0.2:${platform}"
 }
 
+tasks.register("framebufferRegression", JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = "com.sun.glass.ui.monocle.FramebufferRegression"
+}
+check.dependsOn framebufferRegression
+
 // configure publish tasks.
 apply from: rootProject.file("gradle/publish-pom.gradle")
 
